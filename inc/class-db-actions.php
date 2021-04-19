@@ -364,5 +364,17 @@ class DBActions
         return $result;
     }
 
+    /*
+     * GET CREATED AT FOR THE FORFAIT
+     */
+    public function getTaskCreatedAt($id){
+        global $wpdb;
+        $table_tasks = $wpdb->prefix.'tasks';
+        $sql = "SELECT created_at FROM $table_tasks WHERE id=$id";
+        $result = $wpdb->get_var($sql);
+        $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
+        $result = $result->format('d-m-Y H:i:s');
+        return $result;
+    }
 
 }
