@@ -7,7 +7,8 @@ function forfait_overview() {
     ?>
     <div class="forfait-main">
         <div class="head">
-            <p id="deleteAlertMessage" class="delete-alert-message">Attention ! La suppression du forfait, entraineras la suppression des tâches qui lui sont associées !</p>
+            <p id="deleteAlertMessage" class="alert-message">Attention ! La suppression du forfait, entraineras la suppression des tâches qui lui sont associées !</p>
+            <p id="updateAlertMessage" class="alert-message">Attention ! La modification du forfait auras pour effet de détacher les tâches de ce forfait </br> Elles seront toujours présentes mais ne seront plus comptabilisé sur ce forfait.</p>
             <?php
             if (isset($_SESSION['create_success'])) :
                 echo '<div class="session-msg session-success"><p>'.$_SESSION['create_success'].'<i class="fas fa-smile"></i></p></div>';
@@ -29,7 +30,6 @@ function forfait_overview() {
         </div>
 
         <div>
-
             <div class="overview-list-container">
                 <div class="overview-forfaits-infos">
                     <?php
@@ -96,7 +96,7 @@ function forfait_overview() {
                                 <td>
                                     <div class="update-btn-container">
                                         <a href="admin.php?page=forfait_suivi&id=<?= $forfait[0]->id ?>">
-                                            <button class="update-btn">Modifier</button>
+                                            <button id="updateBtn" class="update-btn">Modifier</button>
                                         </a>
                                     </div>
                                     <form class="delete-btn-container" action="" method="POST">
@@ -168,10 +168,6 @@ function forfait_overview() {
                             <input type="hidden" name="forfait_id" value="<?= $forfait[0]->id ?>">
                         </div>
                         <div class="add-form-fields">
-                            <label for="title">Nom</label>
-                            <input name="title" type="text" placeholder="Titre de la tâche" required>
-                        </div>
-                        <div class="add-form-fields">
                             <label id="taskTimeLabel" for="task_time">Durée</label>
                             <input id="taskTimeInput" name="task_time" step="1" type="time" required>
                         </div>
@@ -241,7 +237,7 @@ function forfait_overview() {
                     <table class="custom-table-overview">
                         <thead>
                         <tr>
-                            <th class="custom-col">ID</th>
+                            <th class="custom-col">Status</th>
                             <th class="custom-col">Description</th>
                             <th class="custom-col">Durée de la tâche</th>
                             <th class="custom-col">Date de création</th>
@@ -255,7 +251,13 @@ function forfait_overview() {
                         foreach ($tasks as $task) :
                         ?>
                             <tr class="overview-tasks <?= $task->forfait_id ?>">
-                                <th scope="row"><?= $task->id ?></th>
+                                <th scope="row">
+                                    <?php if ($task->usable === '0') : ?>
+                                    <div class="usable-false"></div>
+                                    <?php elseif ($task->usable === '1') : ?>
+                                    <div class="usable-true"></div>
+                                    <?php endif; ?>
+                                </th>
                                 <th><?= $task->description ?></th>
                                 <th><?= $task->task_time ?></th>
                                 <th><?= $DBAction->getTaskCreatedAt($task->id) ?></th>
