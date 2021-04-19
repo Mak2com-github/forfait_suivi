@@ -258,7 +258,7 @@ function forfait_overview() {
                                 <th scope="row"><?= $task->id ?></th>
                                 <th><?= $task->description ?></th>
                                 <th><?= $task->task_time ?></th>
-                                <th><?= $task->created_at ?></th>
+                                <th><?= $DBAction->getTaskCreatedAt($task->id) ?></th>
                                 <th>
                                     <form class="delete-btn-container" action="" method="POST">
                                         <input type="hidden" name="id" value="<?= $task->id ?>">
