@@ -96,6 +96,7 @@ class DBActions
     public function updateForfait($datas) {
         global $wpdb;
         $table_forfait = $wpdb->prefix.'forfait';
+        $table_tasks = $wpdb->prefix.'tasks';
 
         if (empty($datas['title'])) {
             $errors['title'] = 'Le titre est vide';
@@ -127,6 +128,12 @@ class DBActions
             // Execution de la requete
             $wpdb->query($sql);
 
+            // Préparation de la requête
+            $sql2 = "UPDATE $table_tasks SET 
+                 usable=0";
+            // Execution de la requete
+            $wpdb->query($sql2);
+
             // Session message
             $_SESSION['update_success'] = "Forfait Modifié ! ";
         }
@@ -140,9 +147,6 @@ class DBActions
 
         $tasks_table = $wpdb->prefix. "tasks";
 
-        if (empty($datas['title'])) {
-            $errors['title'] = 'Le titre est vide';
-        }
         if (empty($datas['task_time'])) {
             $errors['task_time'] = 'Le temps total est vide';
         }
@@ -156,7 +160,6 @@ class DBActions
             // Nettoyer les données contre les injections XSS
             $forfait_id = $datas['forfait_id'];
             $remaining_time = $datas['remaining_time'];
-            $title = strip_tags($datas['title']);
             $total_time = strip_tags($datas['task_time']);
             $description = htmlspecialchars($datas['description']);
             $created_at = date('Y-m-d H:i:s', time());
@@ -165,9 +168,8 @@ class DBActions
             // Prépare la requete
             $sql = $wpdb->prepare(
                 "INSERT INTO {$tasks_table}
-                        (forfait_id, title, task_time, description, remaining_time, created_at, updated_at) VALUES (%d,%s,%s,%s,%s,%s,%s )",
+                        (forfait_id, task_time, description, remaining_time, created_at, updated_at) VALUES (%d,%s,%s,%s,%s,%s )",
                 $forfait_id,
-                $title,
                 $total_time,
                 $description,
                 $remaining_time,
@@ -213,9 +215,6 @@ class DBActions
         if (empty($datas['forfait_id'])) {
             $errors['forfait_id'] = "Le forfait n'est pas sélectionné";
         }
-        if (empty($datas['title'])) {
-            $errors['title'] = 'Le titre est vide';
-        }
         if (empty($datas['task_time'])) {
             $errors['task_time'] = 'Le temps total est vide';
         }
@@ -229,7 +228,6 @@ class DBActions
             // Nettoyer les données contre les injections XSS
             $id = strip_tags($datas['id']);
             $forfait_id = strip_tags($datas['forfait_id']);
-            $title = strip_tags($datas['title']);
             $taskTime = strip_tags($datas['task_time']);
             $description = htmlspecialchars($datas['description']);
             $updated_at = date('Y-m-d H:i:s', time());
@@ -237,7 +235,6 @@ class DBActions
             // Préparation de la requête
             $sql = "UPDATE $table_tasks SET 
                  forfait_id='$forfait_id', 
-                 title='$title', 
                  task_time='$taskTime', 
                  description='$description', 
                  updated_at='$updated_at' 
@@ -273,7 +270,7 @@ class DBActions
         $table_forfait = $wpdb->prefix.'forfait';
         $table_tasks = $wpdb->prefix.'tasks';
 
-        $sql = "SELECT count(*) FROM $table_tasks as tblTasks JOIN $table_forfait as tblForfait WHERE tblTasks.forfait_id=$forfait_id AND tblForfait.id=$forfait_id ";
+        $sql = "SELECT count(*) FROM $table_tasks as tblTasks JOIN $table_forfait as tblForfait WHERE tblTasks.forfait_id=$forfait_id AND tblTasks.usable=1 AND tblForfait.id=$forfait_id";
         $forfaitCount = $wpdb->get_var($sql);
 
         return $forfaitCount;
@@ -287,7 +284,7 @@ class DBActions
 
         $table_tasks = $wpdb->prefix.'tasks';
 
-        $sql = "SELECT SEC_TO_TIME( SUM( TIME_TO_SEC( task_time ) ) ) FROM {$table_tasks} WHERE forfait_id=$forfait_id";
+        $sql = "SELECT SEC_TO_TIME( SUM( TIME_TO_SEC( task_time ) ) ) FROM {$table_tasks} WHERE forfait_id=$forfait_id AND usable='1'";
 
         $tasksTotalTime = $wpdb->get_var($sql);
 
