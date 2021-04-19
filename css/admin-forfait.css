@@ -1,0 +1,437 @@
+
+.update-btn-container {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+}
+.update-btn {
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    text-decoration: none;
+    color: blueviolet;
+    border: none;
+    background-color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 5px 0;
+}
+.update-btn:hover {
+    background-color: blueviolet;
+    color: white;
+}
+
+
+.delete-btn-container {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+}
+.delete-btn {
+    text-align: center;
+    width: 100%;
+    height: 30px;
+    text-decoration: none;
+    color: red;
+    border: none;
+    border-radius: 3px;
+    background-color: white;
+    cursor: pointer;
+    margin: 5px 0;
+}
+.delete-btn:hover {
+    background-color: red;
+    color: white;
+}
+
+.create-btn-container {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+}
+.create-btn {
+    text-align: center;
+    width: 100%;
+    height: 30px;
+    text-decoration: none;
+    color: green;
+    border: none;
+    border-radius: 3px;
+    background-color: white;
+    cursor: pointer;
+    margin: 5px 0;
+}
+.create-btn:hover {
+    background-color: green;
+    color: white;
+}
+
+.closeFormButton {
+    border-radius: 50px;
+    border: 2px solid #DF4744;
+    background-color: #FC5753;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    outline: none;
+}
+.closeFormButton i {
+    color: #7E0508;
+    font-size: 14px;
+    display: inline;
+    padding: 0;
+}
+
+.alert-orange {
+    color: orange;
+}
+.alert-red {
+    color: red;
+}
+
+.displayNone {
+    display: none;
+}
+
+.displayBlock {
+    display: block !important;
+}
+
+.post-scriptum {
+    padding: 0;
+    margin: 0;
+    font-weight: 100;
+    font-size: 12px;
+    font-style: italic;
+}
+
+#forfaitAlertClose {
+    width: 40px;
+    height: auto;
+    padding: 0;
+    font-size: 15px;
+}
+
+/*
+ * *****************
+ * ** REFACTORING **
+ * *****************
+ */
+
+.session-msg {
+    width: 99%;
+    margin: 2% 0;
+    padding: 1% 0;
+    color: #e6e6e6;
+}
+.session-msg i {
+    font-size: 30px;
+    display: inline;
+    vertical-align: bottom;
+}
+.session-msg p {
+    font-size: 18px;
+    font-weight: 400;
+    margin: 0;
+}
+.session-alert {
+    background-color: #ce4949;
+    border-left: 10px solid maroon;
+}
+.session-success {
+    background-color: #28ab56;
+    border-left: 10px solid #127700;
+}
+
+.delete-alert-message {
+    background-color: #bb0000;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 1%;
+    color: white;
+    font-size: 20px;
+    padding: 5px 5%;
+    transition: 0.5s ease-in-out;
+    display: none;
+}
+
+.forfait-main {
+    width: 100%;
+    height: auto;
+}
+
+.forfait-main .head {
+    width: 98%;
+    text-align: center;
+    margin: 1% 0 3% 0;
+    border-bottom: 1px solid lightgrey;
+}
+
+.forfait-main .head h2 {
+    font-size: 30px;
+    margin: 0;
+}
+
+.forfait-main .head-infos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 2%;
+}
+.forfait-main .head-infos div {
+    margin: 0 2%;
+}
+
+.forfait-main .forfaits-main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.create-forfait-form {
+    position: fixed;
+    top: 35%;
+    left: 40%;
+    width: 25%;
+    height: auto;
+    padding: 1%;
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
+}
+.create-forfait-form h2 {
+    text-align: center;
+}
+.create-forfait-form form {
+    color: black;
+    font-weight: 500;
+}
+.create-forfait-form-fields {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 0;
+}
+.create-forfait-form-fields select {
+    max-width: 100%;
+}
+.create-forfait-form-fields label {
+    padding-bottom: 10px;
+    cursor: default;
+    font-size: 18px;
+}
+.create-forfait-form-fields input {
+    border-radius: 0;
+}
+
+.add-form {
+    position: fixed;
+    display: none;
+    top: 20%;
+    width: 30%;
+    height: auto;
+    padding: 1%;
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
+}
+
+.add-form form {
+    color: black;
+    font-weight: 500;
+}
+
+.add-form-fields {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.add-form-fields select {
+    max-width: 100%;
+}
+
+.add-form-fields label {
+    padding-bottom: 10px;
+    cursor: default;
+    font-size: 18px;
+}
+
+.add-form-fields input {
+    border-radius: 0;
+}
+
+.custom-plugin-submit {
+    margin-left: 25%;
+    width: 50%;
+    border-radius: 0;
+    background: black;
+    border: none;
+    color: white;
+    padding: 3%;
+    font-size: 18px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+/* *********
+ * Overview
+ * *********
+ */
+.overview-head {
+    text-align: center;
+}
+.overview-head h2 {
+    font-size: 25px;
+    font-weight: 500;
+}
+.overview-head p {
+
+}
+
+.selected-forfait-table {
+    border: 1px solid lightgrey;
+}
+
+.selected-forfait-table th {
+    background-color: #353535;
+    color: white;
+    padding: 2%;
+    font-weight: 500;
+    font-size: 15px;
+    text-align: center;
+}
+.selected-forfait-table td {
+    background-color: #f5f5f5;
+    text-align: right;
+    font-size: 15px;
+    padding: 2%;
+    font-weight: 500;
+}
+
+.overview-list-container {
+    width: 100%;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.selected-forfait-datas {
+    border-radius: 5px;
+}
+
+.selected-forfait-alert {
+    background-color: white;
+    padding: 0 5%;
+    width: 90%;
+}
+
+.selected-forfait-alert p {
+    color: red;
+    font-size: 18px;
+    margin: 0;
+    text-align: center;
+}
+
+/*
+ * Tableau Overview
+ */
+.custom-table-widget {
+    width: 100%;
+    border: 1px solid lightgrey;
+}
+
+.custom-table-widget thead {
+    background-color: #353535;
+    color: #ffffff;
+}
+
+.custom-table-widget .custom-col {
+    padding: 5px;
+    font-weight: 500;
+}
+
+.custom-table-widget tr th:nth-child(0n+1) {
+    width: 20%;
+}
+.custom-table-widget tr th:nth-child(0n+2) {
+    width: 30%;
+}
+.custom-table-widget tr th:nth-child(0n+3) {
+    width: 30%;
+}
+.custom-table-widget tr th:nth-child(0n+4) {
+    width: 20%;
+}
+
+.custom-table-widget tbody tr th {
+    padding: 10px;
+    font-weight: 400;
+}
+
+.custom-table-widget tbody tr:nth-child(odd) {
+    background-color: #f5f5f5;
+}
+.custom-table-widget tbody tr:nth-child(even) {
+    background-color: #d8d8d8;
+}
+
+/*
+ * Tableau Overview
+ */
+.overview-forfaits-infos {
+    width: 20%;
+}
+
+.tasks-listing {
+    width: 70%;
+}
+
+.custom-table-overview {
+    border: 1px solid lightgrey;
+}
+
+.custom-table-overview thead {
+    background-color: #353535;
+    color: #ffffff;
+}
+
+.custom-table-overview .custom-col {
+    padding: 10px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.custom-table-overview tr th:nth-child(0n+1) {
+    width: 2%;
+}
+.custom-table-overview tr th:nth-child(0n+2) {
+    width: 58%;
+}
+.custom-table-overview tr th:nth-child(0n+3) {
+    width: 10%;
+}
+.custom-table-overview tr th:nth-child(0n+4) {
+    width: 20%;
+}
+.custom-table-overview tr th:nth-child(0n+5) {
+    width: 10%;
+}
+
+.custom-table-overview tbody tr th {
+    padding: 0 10px;
+    font-weight: 400;
+}
+
+.custom-table-overview tbody tr:nth-child(odd) {
+    background-color: #f5f5f5;
+}
+.custom-table-overview tbody tr:nth-child(even) {
+    background-color: #d8d8d8;
+}
