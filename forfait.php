@@ -54,10 +54,10 @@ function create_db() {
             "CREATE TABLE IF NOT EXISTS {$table_tasks} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             forfait_id BIGINT UNSIGNED NOT NULL,
-            title varchar(250) NULL,
             task_time time NULL,
             description varchar(500) NULL,
             remaining_time time NULL,
+            usable TINYINT NOT NULL DEFAULT 1,
             created_at datetime NULL,
             updated_at datetime NULL,
             FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
@@ -169,7 +169,6 @@ function custom_dashboard_help() {
                 }
 
             echo '<tr class="overview-tasks">';
-
                 echo '<th>'.$interval.'</th>';
                 echo '<th>'.$DBAction->getTasksNumberByForfait($forfait->id).'</th>';
             echo '</tr>';
