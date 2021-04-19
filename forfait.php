@@ -144,8 +144,6 @@ function custom_dashboard_help() {
     echo '<table class="custom-table-widget">';
         echo '<thead>';
             echo '<tr>';
-                echo '<th class="custom-col">Nom</th>';
-                echo '<th class="custom-col">Temps Total</th>';
                 echo '<th class="custom-col">Temps Restant</th>';
                 echo '<th class="custom-col">Tâches Attribuées</th>';
             echo '</tr>';
@@ -171,8 +169,7 @@ function custom_dashboard_help() {
                 }
 
             echo '<tr class="overview-tasks">';
-                echo '<th scope="row">'.$forfait->title.'</th>';
-                echo '<th>'.$forfait->total_time.'</th>';
+
                 echo '<th>'.$interval.'</th>';
                 echo '<th>'.$DBAction->getTasksNumberByForfait($forfait->id).'</th>';
             echo '</tr>';
