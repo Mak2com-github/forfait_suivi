@@ -143,7 +143,7 @@
     border-left: 10px solid #127700;
 }
 
-.delete-alert-message {
+.alert-message {
     background-color: #bb0000;
     position: fixed;
     width: 100%;
@@ -386,6 +386,20 @@
  */
 .overview-forfaits-infos {
     width: 20%;
+}
+
+.usable-false {
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    background-color: #ff5858;
+}
+
+.usable-true {
+    width: 100%;
+    height: 35px;
+    border-radius: 5px;
+    background-color: #60d860;
 }
 
 .tasks-listing {
