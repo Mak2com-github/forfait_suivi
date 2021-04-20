@@ -8,7 +8,7 @@ function forfait_overview() {
     <div class="forfait-main">
         <div class="head">
             <p id="deleteAlertMessage" class="alert-message">Attention ! La suppression du forfait, entraineras la suppression des tâches qui lui sont associées !</p>
-            <p id="updateAlertMessage" class="alert-message">Attention ! La modification du forfait auras pour effet de détacher les tâches de ce forfait <br> Elles seront toujours présentes mais ne seront plus comptabilisé sur ce forfait.</p>
+            <p id="updateAlertMessage" class="alert-message">Attention ! La modification du forfait auras pour effet de détacher les tâches de ce forfait </br> Elles seront toujours présentes mais ne seront plus comptabilisé sur ce forfait.</p>
             <?php
             if (isset($_SESSION['create_success'])) :
                 echo '<div class="session-msg session-success"><p>'.$_SESSION['create_success'].'<i class="fas fa-smile"></i></p></div>';
