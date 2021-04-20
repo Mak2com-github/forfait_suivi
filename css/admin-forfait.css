@@ -284,13 +284,48 @@
  */
 .overview-head {
     text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 }
 .overview-head h2 {
     font-size: 25px;
     font-weight: 500;
 }
-.overview-head p {
 
+.overview-head .head-title {
+    width: 85%;
+}
+
+.status-legend-main {
+    width: 15%;
+}
+
+.status-legend-main h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 2%;
+}
+
+.status-legend-block {
+    display: flex;
+    flex-direction: revert;
+    justify-content: space-between;
+    margin: 2% 0;
+}
+
+.status-legend-block .usable-false {
+    width: 45px;
+}
+.status-legend-block .usable-true {
+    width: 45px;
+}
+
+.status-legend-block p {
+    margin: 2% 0;
+    line-height: 25px;
+    text-align: left;
+    width: 80%;
 }
 
 .selected-forfait-table {
