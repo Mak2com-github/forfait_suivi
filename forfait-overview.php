@@ -24,9 +24,22 @@ function forfait_overview() {
             ?>
         </div>
         <div class="overview-head">
-            <h2>Vue Générale</h2>
-            <p>Liste de tous les forfaits et taches</p>
-            <p class="post-scriptum">Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
+            <div class="status-legend-main">
+                <h3>Status</h3>
+                <div class="status-legend-block">
+                    <div class="usable-false"></div>
+                    <p>Tâche débitée sur un ancien forfait</p>
+                </div>
+                <div class="status-legend-block">
+                    <div class="usable-true"></div>
+                    <p>Tâche débitée sur le forfait en cours</p>
+                </div>
+            </div>
+            <div class="head-title">
+                <h2>Vue Générale</h2>
+                <p>Liste de tous les forfaits et taches</p>
+                <p class="post-scriptum">Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
+            </div>
         </div>
 
         <div>
