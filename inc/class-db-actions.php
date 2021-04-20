@@ -344,7 +344,7 @@ class DBActions
         $sql = "SELECT created_at FROM $table_forfait WHERE id=$id";
         $result = $wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
-        $result = $result->format('d-m-Y H:i:s');
+        $result = $result->format('d-m-Y');
         return $result;
     }
 
@@ -357,7 +357,7 @@ class DBActions
         $sql = "SELECT updated_at FROM $table_forfait WHERE id=$id";
         $result = $wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
-        $result = $result->format('d-m-Y H:i:s');
+        $result = $result->format('d-m-Y');
         return $result;
     }
 
@@ -370,7 +370,7 @@ class DBActions
         $sql = "SELECT created_at FROM $table_tasks WHERE id=$id";
         $result = $wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
-        $result = $result->format('d-m-Y H:i:s');
+        $result = $result->format('d-m-Y');
         return $result;
     }
 
