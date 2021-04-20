@@ -88,7 +88,7 @@ function forfait_overview() {
                                 <td><?= $DBAction->getForfaitCreatedAt($forfait[0]->id) ?></td>
                             </tr>
                             <tr>
-                                <th>Mis à jour le: </th>
+                                <th>Rechargé le: </th>
                                 <td><?= $DBAction->getForfaitUpdatedAt($forfait[0]->id) ?></td>
                             </tr>
                             <tr>
