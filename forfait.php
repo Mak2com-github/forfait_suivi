@@ -22,8 +22,6 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-date_default_timezone_set('Europe/Paris');
-
 register_activation_hook(__FILE__, 'create_db');
 function create_db() {
 
