@@ -82,18 +82,26 @@ function alertDeleteConfirm() {
     var updateBtn = document.getElementById('updateBtn')
     var deleteMessage = document.getElementById('deleteAlertMessage')
     var updateMessage = document.getElementById('updateAlertMessage')
-    deleteBtn.addEventListener('mouseenter', function () {
-        deleteMessage.classList.add('displayBlock')
-    })
-    deleteBtn.addEventListener('mouseleave', function () {
-        deleteMessage.classList.remove('displayBlock')
-    })
-    updateBtn.addEventListener('mouseenter', function () {
-        updateMessage.classList.add('displayBlock')
-    })
-    updateBtn.addEventListener('mouseleave', function () {
-        updateMessage.classList.remove('displayBlock')
-    })
+    if (deleteBtn) {
+        deleteBtn.addEventListener('mouseenter', function () {
+            deleteMessage.classList.add('displayBlock')
+        })
+    }
+    if (deleteBtn) {
+        deleteBtn.addEventListener('mouseleave', function () {
+            deleteMessage.classList.remove('displayBlock')
+        })
+    }       
+    if (updateBtn) {
+        updateBtn.addEventListener('mouseenter', function () {
+            updateMessage.classList.add('displayBlock')
+        })
+    }
+    if (updateBtn) {
+        updateBtn.addEventListener('mouseleave', function () {
+            updateMessage.classList.remove('displayBlock')
+        })
+    }
 }
 
 jQuery(document).ready( function () {
