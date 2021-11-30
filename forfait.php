@@ -1,14 +1,14 @@
 <?php
 /*
  * @link              http://mak2com.fr
- * @since             2.1.5
+ * @since             2.1.6
  * @package           Forfait_Suivi
  *
  * @wordpress-plugin
  * Plugin Name:       Forfait Suivi
  * Plugin URI:        http://mak2com.fr
  * Description:       Permet la création de forfait de suivi des intervention techniques effectués pour le site du client, ainsi que la création et la gestion des tâches effectués.
- * Version:           2.1.5
+ * Version:           2.1.6
  * Author:            Mak2com
  * Author URI:        http://mak2com.fr/
  * License:           GPL-2.0+
