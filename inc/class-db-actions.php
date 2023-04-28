@@ -29,11 +29,21 @@ class DBActions
 
         $forfait_table = $wpdb->prefix. "forfait";
 
+        $total_time = strip_tags($datas['total_time']);
+
         if (empty($datas['title'])) {
             $errors['title'] = 'Le titre est vide';
         }
-        if (empty($datas['total_time'])) {
+        if (empty($total_time)) {
             $errors['total_time'] = 'Le temps total est vide';
+        } else {
+            // Validation de la valeur soumise
+            if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $total_time, $matches)) {
+                // Transformation en nombre de secondes
+                $total_time = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+            } else {
+                $errors['total_time'] = 'Le temps total n\'est pas au bon format';
+            }
         }
         if (empty($datas['description'])) {
             $errors['description'] = 'La description est vide';
@@ -44,7 +54,6 @@ class DBActions
         } else {
             // Nettoyer les données contre les injections XSS
             $title = strip_tags($datas['title']);
-            $total_time = strip_tags($datas['total_time']);
             $description = htmlspecialchars($datas['description']);
             $created_at = date('Y-m-d H:i:s', time());
             $updated_at = date('Y-m-d H:i:s', time());
@@ -52,7 +61,7 @@ class DBActions
             // Prépare la requete
             $sql = $wpdb->prepare(
                 "INSERT INTO {$forfait_table}
-                        (title, total_time, description, created_at, updated_at) VALUES (%s,%s,%s,%s,%s )",
+                        (title, total_time, description, created_at, updated_at) VALUES (%s,(SEC_TO_TIME(%d)),%s,%s,%s )",
                 $title,
                 $total_time,
                 $description,
@@ -147,20 +156,30 @@ class DBActions
 
         $tasks_table = $wpdb->prefix. "tasks";
 
-        if (empty($datas['task_time'])) {
-            $errors['task_time'] = 'Le temps total est vide';
-        }
+        $task_time = strip_tags($datas['task_time']);
+        $remaining_time = $datas['remaining_time'];
+
+        $task_time = self::checkTimeFormat($task_time);
+        $remaining_time = self::checkTimeFormat($remaining_time);
+
         if (empty($datas['description'])) {
             $errors['description'] = 'La description est vide';
         }
-
+        if (empty($remaining_time)) {
+            // Validation de la valeur soumise
+            if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $remaining_time, $matches)) {
+                // Transformation en nombre de secondes
+                $remaining_time = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+            } else {
+                $errors['total_time'] = 'Le temps restant n\'est pas au bon format';
+            }
+        }
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
         } else {
             // Nettoyer les données contre les injections XSS
             $forfait_id = $datas['forfait_id'];
-            $remaining_time = $datas['remaining_time'];
-            $total_time = strip_tags($datas['task_time']);
+
             $description = htmlspecialchars($datas['description']);
             $created_at = date('Y-m-d H:i:s', time());
             $updated_at = date('Y-m-d H:i:s', time());
@@ -168,9 +187,9 @@ class DBActions
             // Prépare la requete
             $sql = $wpdb->prepare(
                 "INSERT INTO {$tasks_table}
-                        (forfait_id, task_time, description, remaining_time, created_at, updated_at) VALUES (%d,%s,%s,%s,%s,%s )",
+                        (forfait_id, task_time, description, remaining_time, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,(SEC_TO_TIME(%d)),%s,%s )",
                 $forfait_id,
-                $total_time,
+                $task_time,
                 $description,
                 $remaining_time,
                 $created_at,
@@ -372,6 +391,45 @@ class DBActions
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
         $result = $result->format('d-m-Y');
         return $result;
+    }
+
+    private function checkTimeFormat($time): float|int|string
+    {
+        if (empty($time)) {
+            return $errors['total_time'] = 'Le temps total est vide';
+        } else {
+            // Validation de la valeur soumise
+            if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+                // Transformation en nombre de secondes
+                return $result = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+            } else {
+                return $errors['total_time'] = 'Le temps total n\'est pas au bon format';
+            }
+        }
+    }
+
+    public function TimeToSec($time) {
+        // Validation de la valeur soumise
+        if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+            // Transformation en nombre de secondes
+            return $result['seconds'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+        } else {
+            return $result['total_time'] = 'Le temps total n\'est pas au bon format';
+        }
+    }
+
+    public function SecToTime($seconds) {
+        if (is_int($seconds)) {
+            // Calcul des heures, minutes et secondes
+            $heures = floor($seconds / 3600);
+            $minutes = floor(($seconds % 3600) / 60);
+            $secondes = $seconds % 60;
+
+            return $time = $heures.":".$minutes.":".$secondes;
+        } else {
+            // La durée n'est pas un nombre entier positif
+            return $result['error'] = "La durée n'est pas un nombre entier positif";
+        }
     }
 
 }

@@ -53,31 +53,23 @@ function forfait_overview() {
                     ?>
                     <div class="selected-forfait-datas">
                         <?php
-                        $forfaitTasks = $DBAction->getListTasks($forfait[0]->id);
                         $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
                         $forfaitTotalTime = $forfait[0]->total_time;
 
                         if ($tasksTotalTime) {
-                            $totalForfait = new DateTime($forfaitTotalTime, new DateTimeZone('Europe/Paris'));
-                            $totalTasks = new DateTime($tasksTotalTime, new DateTimeZone('Europe/Paris'));
-
-                            $interval = $totalForfait->diff($totalTasks);
-                            $interval = $interval->format('%H:%I:%S');
-
-                            $totalForfaitDisplay = $totalForfait->format('H:i:s');
-                            $totalTasksDisplay = $totalTasks->format('H:i:s');
-                        } else {
-                            $interval = $forfaitTotalTime;
+                            $TasksSeconds = $DBAction->TimeToSec($tasksTotalTime);
+                            $ForfaitSeconds = $DBAction->TimeToSec($forfaitTotalTime);
                         }
+
                         ?>
-                        <?php if ($interval <= '00:00:00') : ?>
+                        <?php if ($tasksTotalTime <= '00:00:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Forfait épuisé !</p>
                             </div>
-                        <?php elseif ($interval <= '00:01:00') : ?>
+                        <?php elseif ($tasksTotalTime <= '00:01:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
-                                <p>Temps Restant : <?= $interval ?></p>
+                                <p>Temps Restant : <?= $tasksTotalTime ?></p>
                             </div>
                         <?php endif; ?>
                         <h3>Infos du Forfait</h3>
@@ -94,7 +86,7 @@ function forfait_overview() {
                             <?php endif; ?>
                             <tr>
                                 <th>Temps Restant:</th>
-                                <td><?= $interval ?></td>
+                                <td><?= $tasksTotalTime ?></td>
                             </tr>
                             <tr>
                                 <th>Crée le: </th>
@@ -136,7 +128,7 @@ function forfait_overview() {
                                 </div>
                                 <div class="add-form-fields">
                                     <label for="total_time">Temps Total</label>
-                                    <input name="total_time" type="time" step="15" required>
+                                    <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$">
                                 </div>
                                 <div class="add-form-fields">
                                     <label for="description">Description</label>
@@ -182,7 +174,7 @@ function forfait_overview() {
                         </div>
                         <div class="add-form-fields">
                             <label id="taskTimeLabel" for="task_time">Durée</label>
-                            <input id="taskTimeInput" name="task_time" step="1" type="time" required>
+                            <input name="task_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$">
                         </div>
                         <div class="add-form-fields">
                             <label for="description">Description</label>

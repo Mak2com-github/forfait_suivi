@@ -37,9 +37,9 @@ function create_db() {
         $sql_forfait =
             "CREATE TABLE IF NOT EXISTS {$table_forfait} (
             `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-            `title` varchar(250) NULL,
-            `total_time` time NULL,
-            `description` varchar(250) NULL,
+            `title` varchar(250) NOT NULL,
+            `total_time` time NOT NULL,
+            `description` varchar(250) NOT NULL,
             `created_at` datetime NULL,
             `updated_at` datetime NULL 
             ) ENGINE=InnoDB DEFAULT CHARSET `$wbdb_charset` COLLATE `$wpdb_collate`";
@@ -52,9 +52,9 @@ function create_db() {
             "CREATE TABLE IF NOT EXISTS {$table_tasks} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             forfait_id BIGINT UNSIGNED NOT NULL,
-            task_time time NULL,
-            description varchar(500) NULL,
-            remaining_time time NULL,
+            task_time time NOT NULL,
+            description varchar(500) NOT NULL,
+            remaining_time time NOT NULL,
             usable TINYINT NOT NULL DEFAULT 1,
             created_at datetime NULL,
             updated_at datetime NULL,
