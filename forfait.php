@@ -97,7 +97,7 @@ function dbOperatorFunctions() {
         $DBAction->createTask($_POST);
     }
     if (isset($_POST['delete_task'])) {
-        $DBAction->deleteTask($_POST['id']);
+        $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
     }
     if (isset($_POST['update_task'])) {
         $DBAction->updateTask($_POST);

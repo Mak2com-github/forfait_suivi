@@ -4,6 +4,14 @@ require_once('inc/class-db-actions.php');
 function forfait_overview() {
     global $wpdb;
     $DBAction = new DBActions();
+    $forfait_table = $wpdb->prefix. "forfait";
+    $forfait = $wpdb->get_results("SELECT * FROM $forfait_table");
+
+    if (!empty($forfait)) {
+        $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
+        $remainingTime = $forfait[0]->total_time;
+        $remainingTime = $DBAction->getForfaitTime($forfait[0]->id);
+    }
     ?>
     <div class="forfait-main">
         <div class="head">
@@ -46,35 +54,21 @@ function forfait_overview() {
             <div class="overview-list-container">
                 <div class="overview-forfaits-infos">
                     <?php
-                    $forfait_table = $wpdb->prefix. "forfait";
-                    $forfait = $wpdb->get_results("SELECT * FROM $forfait_table");
-
                     if (!empty($forfait)) :
                     ?>
                     <div class="selected-forfait-datas">
-                        <?php
-                        $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
-                        $remainingTime = $forfait[0]->total_time;
-
-                        if (!empty($tasksTotalTime)) {
-                            $tasksSeconds = $DBAction->TimeToSec($tasksTotalTime);
-                            $forfaitSeconds = $DBAction->TimeToSec($remainingTime);
-                            $remainingTime = $forfaitSeconds - $tasksSeconds;
-                            $remainingTime = $DBAction->SecToTime($remainingTime);
-                        }
-
-                        ?>
-                        <?php if (!empty($tasksTotalTime) && $tasksTotalTime <= '00:00:00') : ?>
+                        <?php if (!empty($remainingTime) && $remainingTime <= '00:00:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Forfait épuisé !</p>
                             </div>
-                        <?php elseif (!empty($tasksTotalTime) && $tasksTotalTime <= '00:01:00') : ?>
+                        <?php elseif (!empty($remainingTime) && $remainingTime <= '00:01:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
                                 <p>Temps Restant : <?= $tasksTotalTime ?></p>
                             </div>
                         <?php endif; ?>
-                        <h3>Infos du Forfait</h3>
+                        <h3><?= $forfait[0]->title ?></h3>
+                        <p class="forfait-description"><?= $forfait[0]->description ?></p>
                         <table class="selected-forfait-table">
                             <tr>
                                 <th>Nombres de tâches attribuées: </th>
@@ -106,13 +100,20 @@ function forfait_overview() {
                                             <button id="updateBtn" class="update-btn">Modifier</button>
                                         </a>
                                     </div>
+                                    <div class="update-btn-container">
+                                        <a href="admin.php?page=forfait_suivi&id=<?= $forfait[0]->id ?>">
+                                            <button id="updateTimeBtn" class="update-btn">Ajouter du temps</button>
+                                        </a>
+                                    </div>
                                     <form class="delete-btn-container" action="" method="POST">
                                         <input type="hidden" name="id" value="<?= $forfait[0]->id ?>">
                                         <input id="deleteBtn" title="Attention !" class="delete-btn" type="submit" name="delete_forfait" value="Supprimer">
                                     </form>
-                                    <div class="create-btn-container">
-                                        <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTask">Ajouter une Tâche</button>
-                                    </div>
+                                    <?php if (!empty($remainingTime) && $remainingTime > '00:00:00') : ?>
+                                        <div class="create-btn-container">
+                                            <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTask">Ajouter une Tâche</button>
+                                        </div>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         </table>
@@ -122,7 +123,7 @@ function forfait_overview() {
                     if (empty($forfait)) :
                     ?>
                         <div class="create-forfait-form">
-                            <h2>Ajouter un forfait</h2>
+                            <h2>Créer un forfait</h2>
                             <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
                                 <div class="add-form-fields">
                                     <label for="title">Nom</label>
@@ -171,7 +172,6 @@ function forfait_overview() {
                                 $interval = $forfaitTotalTime;
                             }
                             ?>
-                            <input type="hidden" name="remaining_time" value="<?= $interval ?>">
                             <input type="hidden" name="forfait_id" value="<?= $forfait[0]->id ?>">
                         </div>
                         <div class="add-form-fields">
@@ -208,12 +208,13 @@ function forfait_overview() {
                     </form>
                 </div>
 
-                <!-- Update Forfait Form -->
+
                 <?php
                 if (isset($_GET['id'])) :
                     $forfait = $DBAction->getForfaitByID($_GET["id"]);
                     ?>
-                    <div class="add-form displayBlock" id="updateForfaitForm">
+                    <!-- Update Forfait Form -->
+                    <div class="add-form" id="updateForfaitForm">
                         <div class="close-form">
                             <button class="closeFormButton">X</button>
                         </div>
@@ -224,14 +225,25 @@ function forfait_overview() {
                                 <input name="title" type="text" value="<?php if(!empty($forfait[0]->title)) { echo $forfait[0]->title; } ?>" placeholder="Titre du forfait" required>
                             </div>
                             <div class="add-form-fields">
-                                <label for="total_time">Temps Total</label>
-                                <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$">
-                            </div>
-                            <div class="add-form-fields">
                                 <label for="description">Description</label>
                                 <textarea name="description" placeholder="Description du forfait" rows="5" required><?php if (!empty($forfait[0]->description)) { echo $forfait[0]->description; } ?></textarea>
                             </div>
                             <input class="custom-plugin-submit" type="submit" name="update_forfait" value="Modifier">
+                        </form>
+                    </div>
+
+                    <!-- Update Forfait Time Form -->
+                    <div class="add-form" id="updateForfaitTimeForm">
+                        <div class="close-form">
+                            <button class="closeFormButton">X</button>
+                        </div>
+                        <form method="post" action="admin.php?page=forfait_suivi">
+                            <input type="hidden" name="id" value="<?php if(!empty($forfait[0]->id)) { echo $forfait[0]->id; } ?>">
+                            <div class="add-form-fields">
+                                <label for="total_time">Temps Total</label>
+                                <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$" value="<?= $forfait[0]->total_time ?>">
+                            </div>
+                            <input class="custom-plugin-submit" type="submit" name="update_forfait_time" value="Modifier">
                         </form>
                     </div>
                 <?php endif; ?>
@@ -271,6 +283,8 @@ function forfait_overview() {
                                 <th>
                                     <form class="delete-btn-container" action="" method="POST">
                                         <input type="hidden" name="id" value="<?= $task->id ?>">
+                                        <input type="hidden" name="forfait_id" value="<?= $task->forfait_id ?>">
+                                        <input type="hidden" name="time" value="<?= $task->task_time ?>">
                                         <input class="delete-btn" type="submit" name="delete_task" value="Supprimer">
                                     </form>
                                 </th>
