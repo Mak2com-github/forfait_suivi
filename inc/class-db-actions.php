@@ -25,7 +25,7 @@ class DBActions
     private $ForfaitTable;
     private $TasksTable;
 
-    private function __construct() {
+    public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->ForfaitTable = $this->wpdb->prefix . "forfait";
@@ -35,48 +35,18 @@ class DBActions
      * CREATE A FORFAIT
      */
     public function createForfait($datas) {
-        // Title
-        if (empty($datas['title'])) {
-            $errors['title'] = 'Le titre est vide';
-        } else {
-            $title = strip_tags($datas['title']);
-        }
-        // Total Time
-        if (empty($datas['total_time'])) {
-            $errors['total_time'] = 'Le temps total est vide';
-        } else {
-            $total_time = strip_tags($datas['total_time']);
-            // Validation de la valeur soumise
-            $total_time = self::checkTimeFormat($total_time);
-            var_dump($total_time);
-            die();
-        }
-        // Description
-        if (empty($datas['description'])) {
-            $errors['description'] = 'La description est vide';
-        } else {
-            $description = htmlspecialchars($datas['description']);
-        }
-        // TimeStamps
-        $created_at = date('Y-m-d H:i:s', time());
-        $updated_at = date('Y-m-d H:i:s', time());
-
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-        } else {
-            // Prépare la requete
+        if (!empty($datas)) {
+            $forfait = $this->ValidateDatas($datas);
             $sql = $this->wpdb->prepare(
                 "INSERT INTO {$this->ForfaitTable}
-                        (title, total_time, description, created_at, updated_at) VALUES (%s,(SEC_TO_TIME(%d)),%s,%s,%s )",
-                $title,
-                $total_time,
-                $description,
-                $created_at,
-                $updated_at
+                        (title, total_time, description, created_at, updated_at) VALUES (%s,(SEC_TO_TIME(%d)),%s,%s,%s)",
+                $forfait['title'],
+                $forfait['total_time'],
+                $forfait['description'],
+                $forfait['created_at'],
+                $forfait['updated_at']
             );
-            // Execution de la requete
             $this->wpdb->query($sql);
-            // Redirection sur url
             $_SESSION['create_success'] = "Forfait Ajouté !";
         }
     }
@@ -84,70 +54,37 @@ class DBActions
     /*
      * DELETE A FORFAIT
      */
-    public function deleteForfait($id) {
-        $table_forfait = $this->wpdb->prefix.'forfait';
-        $table_tasks = $this->wpdb->prefix.'tasks';
-
-        // Nettoyer les données contre les injections XSS
+    public function deleteForfait($id): void
+    {
         $id = strip_tags($id);
 
-        // Préparation de la requête
-        $sqlTasks = "DELETE FROM ".$table_tasks." WHERE forfait_id={$id}";
-        $sqlForfait = "DELETE FROM ".$table_forfait." WHERE id={$id}";
+        $this->wpdb->delete($this->TasksTable, array('forfait_id' => $id));
+        $this->wpdb->delete($this->ForfaitTable, array('id' => $id));
 
-        // Execution de la requete
-        $this->wpdb->query($sqlTasks);
-        $this->wpdb->query($sqlForfait);
-
-        // Session message
-        $_SESSION['delete_success'] = "Forfait Supprimé ! ";
+        if ( $this->wpdb->last_error ) {
+            echo "Error: " . $this->wpdb->last_error . "<br>";
+            echo "Query: " . $this->wpdb->last_query . "<br>";
+        } else {
+            $_SESSION['delete_success'] = "Forfait Supprimé ! ";
+        }
     }
 
     /*
      * UPDATE A FORFAIT
      */
     public function updateForfait($datas) {
-        $table_forfait = $this->wpdb->prefix.'forfait';
-        $table_tasks = $this->wpdb->prefix.'tasks';
-
-        if (empty($datas['title'])) {
-            $errors['title'] = 'Le titre est vide';
-        }
-        if (empty($datas['total_time'])) {
-            $errors['total_time'] = 'Le temps total est vide';
-        }
-        if (empty($datas['description'])) {
-            $errors['description'] = 'La description est vide';
-        }
-
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-        } else {
-            // Nettoyer les données contre les injections XSS
-            $id = strip_tags($datas['id']);
-            $title = strip_tags($datas['title']);
-            $totalTime = strip_tags($datas['total_time']);
-            $description = htmlspecialchars($datas['description']);
-            $updated_at = date('Y-m-d H:i:s', time());
-
-            // Préparation de la requête
-            $sql = "UPDATE $table_forfait SET 
-                 title='$title', 
-                 total_time='$totalTime', 
-                 description='$description', 
-                 updated_at='$updated_at' 
-                WHERE id=$id";
-            // Execution de la requete
+        if (!empty($datas)) {
+            $forfait = $this->ValidateDatas($datas);
+            $sql = $this->wpdb->prepare(
+                "UPDATE {$this->ForfaitTable} SET
+                        (title, total_time, description, updated_at) VALUES (%s, (SEC_TO_TIME(%d)), %s, %s)",
+                $forfait['title'],
+                $forfait['total_time'],
+                $forfait['description'],
+                $forfait['updated_at']
+            );
             $this->wpdb->query($sql);
-
-            // Préparation de la requête
-            $sql2 = "UPDATE $table_tasks SET 
-                 usable=0";
-            // Execution de la requete
-            $this->wpdb->query($sql2);
-
-            // Session message
-            $_SESSION['update_success'] = "Forfait Modifié ! ";
+            $_SESSION['create_success'] = "Forfait mis à jour !";
         }
     }
 
@@ -207,20 +144,18 @@ class DBActions
     /*
      * DELETE TASK BY ID
      */
-    public function deleteTask($id) {
-        $table_tasks = $this->wpdb->prefix.'tasks';
-
-        // Nettoyer les données contre les injections XSS
+    public function deleteTask($id): void
+    {
         $id = strip_tags($id);
 
-        // Préparation de la requête
-        $sql = "DELETE FROM ".$table_tasks." WHERE id={$id}";
+        $this->wpdb->delete($this->TasksTable, array('id' => $id));
 
-        // Execution de la requete
-        $this->wpdb->query($sql);
-
-        // Session message
-        $_SESSION['delete_success'] = "Tâche Supprimé ! ";
+        if ($this->wpdb->last_error) {
+            echo "Error: " . $this->wpdb->last_error . "<br>";
+            echo "Query: " . $this->wpdb->last_query . "<br>";
+        } else {
+            $_SESSION['delete_success'] = "Tâche Supprimé ! ";
+        }
     }
 
     /*
@@ -378,18 +313,14 @@ class DBActions
         return $result;
     }
 
-    private function checkTimeFormat($time): float|int|string
+    private function checkTimeFormat($time): bool|string
     {
-        if (empty($time)) {
-            return $result['error'] = 'Le temps total est vide';
+        // Validation de la valeur soumise
+        if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+            // Transformation en nombre de secondes
+            return $result['result'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
         } else {
-            // Validation de la valeur soumise
-            if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
-                // Transformation en nombre de secondes
-                return $result['result'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
-            } else {
-                return $result['error'] = 'Le temps total n\'est pas au bon format';
-            }
+            return false;
         }
     }
 
@@ -408,13 +339,54 @@ class DBActions
             // Calcul des heures, minutes et secondes
             $heures = floor($seconds / 3600);
             $minutes = floor(($seconds % 3600) / 60);
-            $secondes = $seconds % 60;
+            $secondes = floor($seconds % 60);
 
-            return $time = $heures.":".$minutes.":".$secondes;
+            return $time = sprintf('%02d:%02d:%02d', $heures, $minutes, $secondes);
         } else {
             // La durée n'est pas un nombre entier positif
             return $result['error'] = "La durée n'est pas un nombre entier positif";
         }
+    }
+
+    private function ValidateDatas($datas) {
+
+        $result = array();
+        // Title
+        if (empty($datas['title'])) {
+            $result['title'] = 'Le titre est vide';
+        } else {
+            $result['title'] = strip_tags($datas['title']);
+        }
+        // Total Time
+        if (empty($datas['total_time'])) {
+            $errors['total_time'] = 'Le temps total est vide';
+        } else {
+            $result['total_time'] = strip_tags($datas['total_time']);
+            // Validation de la valeur soumise
+            $result['total_time'] = self::checkTimeFormat($result['total_time']);
+            if ($result['total_time'] === false) {
+                $errors['total_time'] = 'Le temps total n\'est pas au bon format';
+            }
+        }
+        // Description
+        if (empty($datas['description'])) {
+            $errors['description'] = 'La description est vide';
+        } else {
+            $result['description'] = htmlspecialchars($datas['description']);
+        }
+
+        if (isset($datas['id'])) {
+            $result['id'] = strip_tags($datas['id']);
+        }
+
+        // TimeStamps
+        $result['created_at'] = date('Y-m-d H:i:s', time());
+        $result['updated_at'] = date('Y-m-d H:i:s', time());
+
+        if (!empty($errors)) {
+            return $_SESSION['errors'] = $errors;
+        }
+        return $result;
     }
 
 }

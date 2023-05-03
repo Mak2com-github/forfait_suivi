@@ -82,37 +82,26 @@ function init_plugin_menu(){
 
 add_action('admin_init', 'dbOperatorFunctions');
 function dbOperatorFunctions() {
+    $DBAction = new DBActions();
 
     if (isset($_POST['save_forfait'])) {
-        $DBAction = new DBActions();
         $DBAction->createForfait($_POST);
     }
-
     if (isset($_POST['delete_forfait'])) {
-        $DBAction = new DBActions();
         $DBAction->deleteForfait($_POST['id']);
     }
-
     if (isset($_POST['update_forfait'])) {
-        $DBAction = new DBActions();
         $DBAction->updateForfait($_POST);
     }
-
     if (isset($_POST['save_task'])) {
-        $DBAction = new DBActions();
         $DBAction->createTask($_POST);
     }
-
     if (isset($_POST['delete_task'])) {
-        $DBAction = new DBActions();
         $DBAction->deleteTask($_POST['id']);
     }
-
     if (isset($_POST['update_task'])) {
-        $DBAction = new DBActions();
         $DBAction->updateTask($_POST);
     }
-
 }
 
 define('ROOTDIR', plugin_dir_path(__FILE__));

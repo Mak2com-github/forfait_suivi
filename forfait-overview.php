@@ -54,19 +54,21 @@ function forfait_overview() {
                     <div class="selected-forfait-datas">
                         <?php
                         $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
-                        $forfaitTotalTime = $forfait[0]->total_time;
+                        $remainingTime = $forfait[0]->total_time;
 
-                        if ($tasksTotalTime) {
-                            $TasksSeconds = $DBAction->TimeToSec($tasksTotalTime);
-                            $ForfaitSeconds = $DBAction->TimeToSec($forfaitTotalTime);
+                        if (!empty($tasksTotalTime)) {
+                            $tasksSeconds = $DBAction->TimeToSec($tasksTotalTime);
+                            $forfaitSeconds = $DBAction->TimeToSec($remainingTime);
+                            $remainingTime = $forfaitSeconds - $tasksSeconds;
+                            $remainingTime = $DBAction->SecToTime($remainingTime);
                         }
 
                         ?>
-                        <?php if ($tasksTotalTime <= '00:00:00') : ?>
+                        <?php if (!empty($tasksTotalTime) && $tasksTotalTime <= '00:00:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Forfait épuisé !</p>
                             </div>
-                        <?php elseif ($tasksTotalTime <= '00:01:00') : ?>
+                        <?php elseif (!empty($tasksTotalTime) && $tasksTotalTime <= '00:01:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
                                 <p>Temps Restant : <?= $tasksTotalTime ?></p>
@@ -78,15 +80,15 @@ function forfait_overview() {
                                 <th>Nombres de tâches attribuées: </th>
                                 <td><?= $DBAction->getTasksNumberByForfait($forfait[0]->id) ?></td>
                             </tr>
-                            <?php if (isset($totalTasksDisplay)) : ?>
+                            <?php if (isset($tasksTotalTime)) : ?>
                             <tr>
                                 <th>Total temps des tâches :</th>
-                                <td><?= $totalTasksDisplay ?></td>
+                                <td><?= $tasksTotalTime ?></td>
                             </tr>
                             <?php endif; ?>
                             <tr>
                                 <th>Temps Restant:</th>
-                                <td><?= $tasksTotalTime ?></td>
+                                <td><?= $remainingTime ?></td>
                             </tr>
                             <tr>
                                 <th>Crée le: </th>
@@ -109,7 +111,7 @@ function forfait_overview() {
                                         <input id="deleteBtn" title="Attention !" class="delete-btn" type="submit" name="delete_forfait" value="Supprimer">
                                     </form>
                                     <div class="create-btn-container">
-                                        <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $interval ?>')" id="addTask">Ajouter une Tâche</button>
+                                        <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTask">Ajouter une Tâche</button>
                                     </div>
                                 </td>
                             </tr>
@@ -222,8 +224,8 @@ function forfait_overview() {
                                 <input name="title" type="text" value="<?php if(!empty($forfait[0]->title)) { echo $forfait[0]->title; } ?>" placeholder="Titre du forfait" required>
                             </div>
                             <div class="add-form-fields">
-                                <label for="total_time">Temps à ajouter</label>
-                                <input name="total_time" type="time" step="1" required>
+                                <label for="total_time">Temps Total</label>
+                                <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$">
                             </div>
                             <div class="add-form-fields">
                                 <label for="description">Description</label>
