@@ -111,10 +111,8 @@ require_once(ROOTDIR . 'forfait-overview.php');
 add_action('admin_init', 'forfait_admin_js_css');
 function forfait_admin_js_css(){
     wp_enqueue_script('font-awesome', 'https://kit.fontawesome.com/5397c1f880.js', null, null, true);
-    wp_register_style('Forfait_css', plugins_url('css/admin-forfait.css', __FILE__));
+    wp_register_style('Forfait_css', plugins_url('css/admin.css', __FILE__));
     wp_enqueue_style('Forfait_css');
-    wp_register_style('Forfait_css_v2', plugins_url('css/admin-forfait-v2.css', __FILE__));
-    wp_enqueue_style('Forfait_css_v2');
     wp_enqueue_script('Forfait_js', plugins_url('js/main.js', __FILE__), array('jquery'),'1.0',true);
     wp_enqueue_script('jQuery-Ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', null, null, true);
 }
