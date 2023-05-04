@@ -53,9 +53,8 @@ function create_db() {
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             forfait_id BIGINT UNSIGNED NOT NULL,
             task_time time NOT NULL,
-            description varchar(500) NOT NULL,
-            remaining_time time NOT NULL,
-            usable TINYINT NOT NULL DEFAULT 1,
+            description varchar(500) NULL,
+            usable TINYINT NULL,
             created_at datetime NULL,
             updated_at datetime NULL,
             FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
