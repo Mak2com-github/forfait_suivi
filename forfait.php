@@ -87,20 +87,20 @@ function dbOperatorFunctions() {
     if (isset($_POST['save_forfait'])) {
         $DBAction->createForfait($_POST);
     }
-    if (isset($_POST['delete_forfait'])) {
-        $DBAction->deleteForfait($_POST['id']);
-    }
     if (isset($_POST['update_forfait'])) {
         $DBAction->updateForfait($_POST);
+    }
+    if (isset($_POST['update_forfait_time'])) {
+        $DBAction->updateForfaitTime($_POST);
+    }
+    if (isset($_POST['delete_forfait'])) {
+        $DBAction->deleteForfait($_POST['id']);
     }
     if (isset($_POST['save_task'])) {
         $DBAction->createTask($_POST);
     }
     if (isset($_POST['delete_task'])) {
         $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
-    }
-    if (isset($_POST['update_task'])) {
-        $DBAction->updateTask($_POST);
     }
 }
 

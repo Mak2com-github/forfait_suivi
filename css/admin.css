@@ -75,6 +75,7 @@
     height: 25px;
     padding: 0;
     outline: none;
+    cursor: pointer;
 }
 .closeFormButton i {
     color: #7E0508;
@@ -200,10 +201,11 @@
     border-radius: 0;
 }
 
-.add-form {
+.forms-container {
     position: fixed;
     display: none;
     top: 20%;
+    left: 38%;
     width: 30%;
     height: auto;
     padding: 1%;
@@ -213,29 +215,29 @@
     box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
 }
 
-.add-form form {
+.forms-container form {
     color: black;
     font-weight: 500;
 }
 
-.add-form-fields {
+.forms-container-fields {
     display: flex;
     flex-direction: column;
     text-align: center;
     padding: 20px 0;
 }
 
-.add-form-fields select {
+.forms-container-fields select {
     max-width: 100%;
 }
 
-.add-form-fields label {
+.forms-container-fields label {
     padding-bottom: 10px;
     cursor: default;
     font-size: 18px;
 }
 
-.add-form-fields input {
+.forms-container-fields input {
     border-radius: 0;
 }
 

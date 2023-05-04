@@ -82,18 +82,56 @@ class DBActions
                 $sql = $this->wpdb->prepare(
                     "UPDATE {$this->ForfaitTable} 
                             SET title = %s,
-                                total_time = (SEC_TO_TIME(%d)),
                                 description = %s,
                                 updated_at = %s
                             WHERE id = %d",
                     $forfait['title'],
-                    $forfait['total_time'],
                     $forfait['description'],
                     $forfait['updated_at'],
                     $forfait['id']
                 );
                 $this->wpdb->query($sql);
                 $_SESSION['create_success'] = "Forfait mis à jour !";
+            }
+        }
+    }
+
+    /*
+     * UPDATE A FORFAIT
+     */
+    public function updateForfaitTime($datas): void
+    {
+        if (!empty($datas)) {
+            $remainingTime = $this->getForfaitTime($datas['id']);
+            $remainingTime = $this->TimeToSec($remainingTime);
+            $submitedTime = $datas['total_time'];
+            $submitedTime = $this->TimeToSec($submitedTime);
+            $timeToAdd = $remainingTime + $submitedTime;
+            $timeToAdd = $this->SecToTime($timeToAdd);
+
+            $datas['total_time'] = $timeToAdd;
+
+            $forfait = $this->ValidateDatas($datas);
+
+            if (empty($_SESSION['errors'])) {
+                $sql = $this->wpdb->prepare(
+                    "UPDATE {$this->ForfaitTable} 
+                            SET total_time = (SEC_TO_TIME(%d)),
+                                updated_at = %s
+                            WHERE id = %d",
+                    $forfait['total_time'],
+                    $forfait['updated_at'],
+                    $forfait['id']
+                );
+                $this->wpdb->query($sql);
+
+                if ($this->wpdb->last_error) {
+                    echo "Error: " . $this->wpdb->last_error . "<br>";
+                    echo "Query: " . $this->wpdb->last_query . "<br>";
+                } else {
+                    $this->deactivateTasks($forfait['id']);
+                    $_SESSION['create_success'] = "Temps du forfait mis à jour !";
+                }
             }
         }
     }
@@ -146,50 +184,35 @@ class DBActions
         }
     }
 
-    /*
-     * UPDATE TASK BY ID
-     */
-    public function updateTask($datas) {
-        $table_tasks = $this->wpdb->prefix.'tasks';
-
-        if (empty($datas['forfait_id'])) {
-            $errors['forfait_id'] = "Le forfait n'est pas sélectionné";
-        }
-        if (empty($datas['task_time'])) {
-            $errors['task_time'] = 'Le temps total est vide';
-        }
-        if (empty($datas['description'])) {
-            $errors['description'] = 'La description est vide';
-        }
-
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-        } else {
-            // Nettoyer les données contre les injections XSS
-            $id = strip_tags($datas['id']);
-            $forfait_id = strip_tags($datas['forfait_id']);
-            $taskTime = strip_tags($datas['task_time']);
-            $description = htmlspecialchars($datas['description']);
-            $updated_at = date('Y-m-d H:i:s', time());
-
-            // Préparation de la requête
-            $sql = "UPDATE $table_tasks SET 
-                 forfait_id='$forfait_id', 
-                 task_time='$taskTime', 
-                 description='$description', 
-                 updated_at='$updated_at' 
-                WHERE id=$id";
-            // Execution de la requete
-            $this->wpdb->query($sql);
-
-            // Session message
-            $_SESSION['update_success'] = "Tâche Modifiée ! ";
-        }
-    }
-
     private function isTaskActive($id): ?string
     {
         return $this->wpdb->get_var("SELECT usable FROM $this->TasksTable WHERE id = $id");
+    }
+
+    private function deactivateTasks($id): void
+    {
+        $id = strip_tags($id);
+        $datas['id'] = $id;
+        $datas = $this->ValidateDatas($datas);
+        $datas['usable'] = 0;
+
+        if (empty($_SESSION['errors'])) {
+            $sql = $this->wpdb->prepare(
+                "UPDATE {$this->TasksTable} 
+                        SET usable = %d,
+                            updated_at = %s
+                        WHERE id = %d",
+                $datas['usable'],
+                $datas['updated_at'],
+                $datas['id']
+            );
+            $this->wpdb->query($sql);
+
+            if ($this->wpdb->last_error) {
+                echo "Error: " . $this->wpdb->last_error . "<br>";
+                echo "Query: " . $this->wpdb->last_query . "<br>";
+            }
+        }
     }
 
     /*
