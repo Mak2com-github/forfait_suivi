@@ -30,66 +30,71 @@ function toggleForms() {
     var addTaskForm = document.getElementById('addTaskForm')
     var addTaskBtn = document.getElementById('addTaskBtn')
 
-    updateForfaitBtn.addEventListener('click', function() {
-        if (updateForfaitForm.classList.contains('displayBlock')) {
-            updateForfaitForm.classList.remove('displayBlock')
-        } else {
-            updateForfaitForm.classList.add('displayBlock')
-        }
-        if (updateForfaitTimeBtn.classList.contains('displayBlock')) {
-            updateForfaitTimeBtn.classList.remove('displayBlock')
-        }
-        if (addTaskForm.classList.contains('displayBlock')) {
-            addTaskForm.classList.remove('displayBlock')
-        }
-    })
-    var closeForfaitBtn = updateForfaitForm.querySelector(".closeFormButton")
-    closeForfaitBtn.addEventListener("click", function() {
-        if (updateForfaitForm.classList.contains('displayBlock')) {
-            updateForfaitForm.classList.remove('displayBlock')
-        }
-    })
+    if (updateForfaitForm) {
+        updateForfaitBtn.addEventListener('click', function() {
+            if (updateForfaitForm.classList.contains('displayBlock')) {
+                updateForfaitForm.classList.remove('displayBlock')
+            } else {
+                updateForfaitForm.classList.add('displayBlock')
+            }
+            if (updateForfaitTimeBtn.classList.contains('displayBlock')) {
+                updateForfaitTimeBtn.classList.remove('displayBlock')
+            }
+            if (addTaskForm.classList.contains('displayBlock')) {
+                addTaskForm.classList.remove('displayBlock')
+            }
+        })
+        var closeForfaitBtn = updateForfaitForm.querySelector(".closeFormButton")
+        closeForfaitBtn.addEventListener("click", function() {
+            if (updateForfaitForm.classList.contains('displayBlock')) {
+                updateForfaitForm.classList.remove('displayBlock')
+            }
+        })
+    }
 
-    updateForfaitTimeBtn.addEventListener('click', function() {
-        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-            updateForfaitTimeForm.classList.remove('displayBlock')
-        } else {
-            updateForfaitTimeForm.classList.add('displayBlock')
-        }
-        if (updateForfaitForm.classList.contains('displayBlock')) {
-            updateForfaitForm.classList.remove('displayBlock')
-        }
-        if (addTaskForm.classList.contains('displayBlock')) {
-            addTaskForm.classList.remove('displayBlock')
-        }
-    })
-    var closeForfaitTimeBtn = updateForfaitTimeForm.querySelector(".closeFormButton")
-    closeForfaitTimeBtn.addEventListener("click", function() {
-        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-            updateForfaitTimeForm.classList.remove('displayBlock')
-        }
-    })
+    if (updateForfaitTimeForm) {
+        updateForfaitTimeBtn.addEventListener('click', function() {
+            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+                updateForfaitTimeForm.classList.remove('displayBlock')
+            } else {
+                updateForfaitTimeForm.classList.add('displayBlock')
+            }
+            if (updateForfaitForm.classList.contains('displayBlock')) {
+                updateForfaitForm.classList.remove('displayBlock')
+            }
+            if (addTaskForm.classList.contains('displayBlock')) {
+                addTaskForm.classList.remove('displayBlock')
+            }
+        })
+        var closeForfaitTimeBtn = updateForfaitTimeForm.querySelector(".closeFormButton")
+        closeForfaitTimeBtn.addEventListener("click", function() {
+            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+                updateForfaitTimeForm.classList.remove('displayBlock')
+            }
+        })
+    }
 
-    addTaskBtn.addEventListener('click', function() {
-        if (addTaskForm.classList.contains('displayBlock')) {
-            addTaskForm.classList.remove('displayBlock')
-        } else {
-            addTaskForm.classList.add('displayBlock')
-        }
-        if (updateForfaitForm.classList.contains('displayBlock')) {
-            updateForfaitForm.classList.remove('displayBlock')
-        }
-        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-            updateForfaitTimeForm.classList.remove('displayBlock')
-        }
-    })
-    var closeTaskFormBtn = addTaskForm.querySelector(".closeFormButton")
-    closeTaskFormBtn.addEventListener("click", function() {
-        if (addTaskForm.classList.contains('displayBlock')) {
-            addTaskForm.classList.remove('displayBlock')
-        }
-    })
-
+    if (addTaskForm) {
+        addTaskBtn.addEventListener('click', function() {
+            if (addTaskForm.classList.contains('displayBlock')) {
+                addTaskForm.classList.remove('displayBlock')
+            } else {
+                addTaskForm.classList.add('displayBlock')
+            }
+            if (updateForfaitForm.classList.contains('displayBlock')) {
+                updateForfaitForm.classList.remove('displayBlock')
+            }
+            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+                updateForfaitTimeForm.classList.remove('displayBlock')
+            }
+        })
+        var closeTaskFormBtn = addTaskForm.querySelector(".closeFormButton")
+        closeTaskFormBtn.addEventListener("click", function() {
+            if (addTaskForm.classList.contains('displayBlock')) {
+                addTaskForm.classList.remove('displayBlock')
+            }
+        })
+    }
 }
 
 function closeFormAlert() {
@@ -135,4 +140,5 @@ jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
+    jQuery('#wysiwygArea').wpEditor();
 })

@@ -1,7 +1,8 @@
 <?php
 require_once('inc/class-db-actions.php');
 
-function forfait_overview() {
+function forfait_overview(): void
+{
     global $wpdb;
     $DBAction = new DBActions();
     $forfait_table = $wpdb->prefix. "forfait";

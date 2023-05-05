@@ -17,7 +17,7 @@
             </div>
             <div class="forms-container-fields">
                 <label for="description">Description</label>
-                <textarea name="description" placeholder="Description du forfait" rows="5" required><?php if (!empty($forfait[0]->description)) { echo $forfait[0]->description; } ?></textarea>
+                <textarea name="description" id="wysiwygArea" placeholder="Description du forfait" rows="5" required><?php if (!empty($forfait[0]->description)) { echo $forfait[0]->description; } ?></textarea>
             </div>
             <input class="custom-plugin-submit" type="submit" name="update_forfait" value="Modifier">
         </form>
@@ -36,7 +36,7 @@
             <?php endif; ?>
             <input type="hidden" name="id" value="<?php if(!empty($forfait[0]->id)) { echo $forfait[0]->id; } ?>">
             <div class="forms-container-fields">
-                <label for="total_time">Temps Total</label>
+                <label for="total_time">Temps Total <span>FORMAT: 00:00:00</span></label>
                 <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
             </div>
             <input class="custom-plugin-submit" type="submit" name="update_forfait_time" value="Modifier">
