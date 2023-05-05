@@ -1,4 +1,5 @@
 
+/* Object Classes */
 .update-btn-container {
     display: inline-block;
     width: 100%;
@@ -6,15 +7,16 @@
 }
 .update-btn {
     width: 100%;
-    height: 30px;
+    height: 35px;
     text-align: center;
     text-decoration: none;
     color: blueviolet;
-    border: none;
+    border: 1px solid blueviolet;
     background-color: white;
     border-radius: 3px;
     cursor: pointer;
     margin: 5px 0;
+    transition: 0.3s ease-in-out;
 }
 .update-btn:hover {
     background-color: blueviolet;
@@ -30,7 +32,8 @@
 .delete-btn {
     text-align: center;
     width: 100%;
-    height: 30px;
+    height: 35px;
+    text-transform: uppercase;
     text-decoration: none;
     color: red;
     border: none;
@@ -38,9 +41,10 @@
     background-color: white;
     cursor: pointer;
     margin: 5px 0;
+    transition: 0.3s ease-in-out;
 }
 .delete-btn:hover {
-    background-color: red;
+    background-color: #390000;
     color: white;
 }
 
@@ -52,14 +56,15 @@
 .create-btn {
     text-align: center;
     width: 100%;
-    height: 30px;
+    height: 35px;
     text-decoration: none;
     color: green;
-    border: none;
+    border: 1px solid green;
     border-radius: 3px;
     background-color: white;
     cursor: pointer;
     margin: 5px 0;
+    transition: 0.3s ease-in-out;
 }
 .create-btn:hover {
     background-color: green;
@@ -74,6 +79,7 @@
     height: 25px;
     padding: 0;
     outline: none;
+    cursor: pointer;
 }
 .closeFormButton i {
     color: #7E0508;
@@ -112,15 +118,33 @@
     font-size: 15px;
 }
 
-/*
- * *****************
- * ** REFACTORING **
- * *****************
- */
+/* Forfait Main */
+.forfait-main {
+    width: 100%;
+    height: auto;
+    overflow-x: hidden;
+}
+.forfait-main .head {
+    width: 98%;
+    text-align: center;
+    margin: 3% 0 3% 0;
+    border-bottom: 1px solid lightgrey;
+}
+.forfait-main .head .alert-message {
+    background-color: #bb0000;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 1%;
+    color: white;
+    font-size: 20px;
+    padding: 5px 5%;
+    transition: 0.5s ease-in-out;
+    display: none;
+}
 
 .session-msg {
     width: 99%;
-    margin: 2% 0;
     padding: 1% 0;
     color: #e6e6e6;
 }
@@ -141,52 +165,6 @@
 .session-success {
     background-color: #28ab56;
     border-left: 10px solid #127700;
-}
-
-.alert-message {
-    background-color: #bb0000;
-    position: fixed;
-    width: 100%;
-    left: 0;
-    top: 1%;
-    color: white;
-    font-size: 20px;
-    padding: 5px 5%;
-    transition: 0.5s ease-in-out;
-    display: none;
-}
-
-.forfait-main {
-    width: 100%;
-    height: auto;
-}
-
-.forfait-main .head {
-    width: 98%;
-    text-align: center;
-    margin: 1% 0 3% 0;
-    border-bottom: 1px solid lightgrey;
-}
-
-.forfait-main .head h2 {
-    font-size: 30px;
-    margin: 0;
-}
-
-.forfait-main .head-infos {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 2%;
-}
-.forfait-main .head-infos div {
-    margin: 0 2%;
-}
-
-.forfait-main .forfaits-main-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
 }
 
 .create-forfait-form {
@@ -226,10 +204,11 @@
     border-radius: 0;
 }
 
-.add-form {
+.forms-container {
     position: fixed;
     display: none;
     top: 20%;
+    left: 38%;
     width: 30%;
     height: auto;
     padding: 1%;
@@ -239,29 +218,34 @@
     box-shadow: 0 5px 15px 0 rgb(0 0 0 / 30%);
 }
 
-.add-form form {
+.forms-container form {
     color: black;
     font-weight: 500;
 }
 
-.add-form-fields {
+.forms-container-fields {
     display: flex;
     flex-direction: column;
     text-align: center;
     padding: 20px 0;
 }
 
-.add-form-fields select {
+.forms-container-fields select {
     max-width: 100%;
 }
 
-.add-form-fields label {
+.forms-container-fields label {
     padding-bottom: 10px;
     cursor: default;
     font-size: 18px;
 }
+.forms-container-fields label span {
+    font-size: 16px;
+    font-weight: 400;
+    display: block;
+}
 
-.add-form-fields input {
+.forms-container-fields input {
     border-radius: 0;
 }
 
@@ -286,30 +270,32 @@
     text-align: center;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 .overview-head h2 {
     font-size: 25px;
     font-weight: 500;
 }
 
-.overview-head .head-title {
-    width: 85%;
-}
-
 .status-legend-main {
-    width: 15%;
-}
-@media screen and (max-width: 1500px) {
-    .status-legend-main {
-        width: 25%;
-    }
+    background-color: white;
+    width: 20%;
+    border:solid #dadada 1px;
+    border-radius: 5px;
+    box-shadow: #c0b2db24 5px 15px 10px 0;
+    margin: 0 auto;
 }
 
 .status-legend-main h3 {
-    font-size: 20px;
+    font-size: 25px;
+    text-transform: uppercase;
+    text-align: center;
     font-weight: 600;
-    margin: 2%;
+    margin: 4% 2% 3% 2%;
+}
+
+.overview-head .head-title {
+    width: 70%;
 }
 
 .status-legend-block {
@@ -320,12 +306,22 @@
 }
 
 .status-legend-block .usable-false {
-    width: 45px;
-    margin-top: 1%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    margin-left:10px;
+    margin-top: 5px;
+    box-shadow: 0 0 5px 1px rgba(0 0 0 / 20%);
+    background-color: #ff5858;
 }
 .status-legend-block .usable-true {
-    width: 45px;
-    margin-top: 1%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    margin-left:10px;
+    margin-top: 5px;
+    box-shadow: 0 0 5px 1px rgba(0 0 0 / 20%);
+    background-color: #60d860;
 }
 
 .status-legend-block p {
@@ -340,13 +336,17 @@
 }
 
 .selected-forfait-table th {
-    background-color: #353535;
-    color: white;
+    width:200px;
+    background-color:rgb(255, 255, 255);
+    color:black;
     padding: 2%;
-    font-weight: 500;
     font-size: 15px;
-    text-align: center;
+    text-align: left;
+    font-weight: 500;
+    margin-left: 10px;
+    border: solid #dadada 1px;
 }
+
 .selected-forfait-table td {
     background-color: #f5f5f5;
     text-align: right;
@@ -365,16 +365,19 @@
 
 .selected-forfait-datas {
     border-radius: 5px;
+    background-color: white;
+    border: solid #dadada 1px;
+    box-shadow: #c0b2db24 5px 15px 20px 0;
 }
 
 .selected-forfait-alert {
-    background-color: white;
+    background-color: red;
     padding: 0 5%;
     width: 90%;
 }
 
 .selected-forfait-alert p {
-    color: red;
+    color: white;
     font-size: 18px;
     margin: 0;
     text-align: center;
@@ -423,34 +426,13 @@
     background-color: #d8d8d8;
 }
 
-/*
- * Tableau Overview
- */
-.overview-forfaits-infos {
-    width: 20%;
-}
-@media screen and (max-width: 1500px) {
-    .overview-forfaits-infos {
-        width: 25%;
-    }
-}
-
-.usable-false {
-    width: 100%;
-    height: 30px;
-    border-radius: 5px;
-    background-color: #ff5858;
-}
-
-.usable-true {
-    width: 100%;
-    height: 35px;
-    border-radius: 5px;
-    background-color: #60d860;
-}
-
 .tasks-listing {
     width: 70%;
+}
+.tasks-listing h3 {
+    font-size: 24px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .custom-table-overview {
@@ -485,6 +467,10 @@
     width: 10%;
 }
 
+.custom-table-overview tbody .default-table-line {
+    height: 50px;
+}
+
 .custom-table-overview tbody tr th {
     padding: 0 10px;
     font-weight: 400;
@@ -495,4 +481,164 @@
 }
 .custom-table-overview tbody tr:nth-child(even) {
     background-color: #d8d8d8;
+}
+
+.custom-table-overview tbody tr .usable-true {
+    width: 25px;
+    height: 25px;
+    background-color: limegreen;
+    border-radius: 50px;
+    margin: 0 auto;
+    box-shadow: 0 0 5px 0px rgba(0 0 0 / 20%);
+}
+.custom-table-overview tbody tr .usable-false {
+    width: 25px;
+    height: 25px;
+    background-color: limegreen;
+    border-radius: 50px;
+    margin: 0 auto;
+    box-shadow: 0 0 5px 0px rgba(0 0 0 / 20%);
+}
+
+.status-legend-block-false {
+    display: flex;
+}
+
+.status-legend-block-false p {
+    text-align:left;
+    padding-left:5px;
+}
+
+.head-title {
+    margin-left:100px;
+}
+
+.head-title h2 {
+    text-align: left;
+    line-height: 2px;
+}
+
+.head-title p {
+    text-align: left;
+    font-weight:bold;
+    color:black;
+}
+
+.head-title .post-scriptum {
+    font-style:normal;
+    color:black;
+    font-weight:300;
+    line-height: 2px;
+}
+
+.overview-head .head-title{
+    margin-top:-15px;
+}
+
+.overview-list-container {
+    width: 98%;
+    margin-top: 55px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.overview-forfaits-infos {
+    width: 25%;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.selected-forfait-datas h3 {
+    margin-left: 10px;
+    text-align: center;
+    font-size: 25px;
+    text-transform: uppercase;
+}
+.selected-forfait-datas p {
+    padding: 0 5%;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.selected-forfait-table {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius:0px;
+}
+
+.selected-forfait-table tr {
+    border:solid #dadada 1px;
+}
+
+.selected-forfait-table td {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.case-action {
+    background-color:#ffffff ;
+    padding-bottom: 10px;
+}
+
+.case-action p {
+    font-size: 15px;
+    font-family: sans-serif;
+    margin-left: 8px;
+    margin-top:0px;
+}
+
+.boutons {
+    display: flex;
+    margin-left:20px;
+}
+
+.case-action .boutons .create-btn {
+    width: 90px;
+    color:white;
+    background-color: #6FC378;
+}
+
+#updateBtn {
+    width: 90px;
+    color:white;
+    background-color: #390B86;
+}
+
+.delete-btn{
+    width: 100%;
+    color:white;
+    background-color: #ff5858;
+}
+
+.custom-table-overview {
+    width: 100%;
+    box-shadow: #c0b2db24 5px 15px 10px 0;
+    border:solid #dadada 1px;
+    border-collapse: collapse;
+}
+
+.custom-table-overview thead {
+    color:black;
+    background-color: white;
+}
+
+.custom-table-overview th {
+    border: solid 1px #dadada;
+}
+
+.custom-table-overview tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+.forfait-instructions {
+    width: 98%;
+    height: auto;
+}
+.forfait-instructions h2 {
+    font-size: 28px;
+    text-align: center;
+}
+.forfait-instructions .instructions-content ul {
+    list-style: square;
+    padding-left: 25px;
 }

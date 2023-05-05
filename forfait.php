@@ -1,16 +1,16 @@
 <?php
 /*
- * @link              http://mak2com.fr
+ * @link              https://mak2com.fr
  * @since             2.1.6
  * @package           Forfait_Suivi
  *
  * @wordpress-plugin
  * Plugin Name:       Forfait Suivi
- * Plugin URI:        http://mak2com.fr
+ * Plugin URI:        https://mak2com.fr
  * Description:       Permet la création de forfait de suivi des intervention techniques effectués pour le site du client, ainsi que la création et la gestion des tâches effectués.
- * Version:           2.1.6
- * Author:            Mak2com
- * Author URI:        http://mak2com.fr/
+ * Version:           3.1.6
+ * Author:            Alexandre Celier
+ * Author URI:        https://mak2com.fr/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       forfait-suivi
@@ -37,9 +37,9 @@ function create_db() {
         $sql_forfait =
             "CREATE TABLE IF NOT EXISTS {$table_forfait} (
             `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-            `title` varchar(250) NULL,
-            `total_time` time NULL,
-            `description` varchar(250) NULL,
+            `title` varchar(250) NOT NULL,
+            `total_time` time NOT NULL,
+            `description` varchar(250) NOT NULL,
             `created_at` datetime NULL,
             `updated_at` datetime NULL 
             ) ENGINE=InnoDB DEFAULT CHARSET `$wbdb_charset` COLLATE `$wpdb_collate`";
@@ -52,10 +52,9 @@ function create_db() {
             "CREATE TABLE IF NOT EXISTS {$table_tasks} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             forfait_id BIGINT UNSIGNED NOT NULL,
-            task_time time NULL,
+            task_time time NOT NULL,
             description varchar(500) NULL,
-            remaining_time time NULL,
-            usable TINYINT NOT NULL DEFAULT 1,
+            usable TINYINT NULL,
             created_at datetime NULL,
             updated_at datetime NULL,
             FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
@@ -82,37 +81,26 @@ function init_plugin_menu(){
 
 add_action('admin_init', 'dbOperatorFunctions');
 function dbOperatorFunctions() {
+    $DBAction = new DBActions();
 
     if (isset($_POST['save_forfait'])) {
-        $DBAction = new DBActions();
         $DBAction->createForfait($_POST);
     }
-
-    if (isset($_POST['delete_forfait'])) {
-        $DBAction = new DBActions();
-        $DBAction->deleteForfait($_POST['id']);
-    }
-
     if (isset($_POST['update_forfait'])) {
-        $DBAction = new DBActions();
         $DBAction->updateForfait($_POST);
     }
-
+    if (isset($_POST['update_forfait_time'])) {
+        $DBAction->updateForfaitTime($_POST);
+    }
+    if (isset($_POST['delete_forfait'])) {
+        $DBAction->deleteForfait($_POST['id']);
+    }
     if (isset($_POST['save_task'])) {
-        $DBAction = new DBActions();
         $DBAction->createTask($_POST);
     }
-
     if (isset($_POST['delete_task'])) {
-        $DBAction = new DBActions();
-        $DBAction->deleteTask($_POST['id']);
+        $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
     }
-
-    if (isset($_POST['update_task'])) {
-        $DBAction = new DBActions();
-        $DBAction->updateTask($_POST);
-    }
-
 }
 
 define('ROOTDIR', plugin_dir_path(__FILE__));
@@ -122,10 +110,8 @@ require_once(ROOTDIR . 'forfait-overview.php');
 add_action('admin_init', 'forfait_admin_js_css');
 function forfait_admin_js_css(){
     wp_enqueue_script('font-awesome', 'https://kit.fontawesome.com/5397c1f880.js', null, null, true);
-    wp_register_style('Forfait_css', plugins_url('css/admin-forfait.css', __FILE__));
+    wp_register_style('Forfait_css', plugins_url('css/admin.css', __FILE__));
     wp_enqueue_style('Forfait_css');
-    wp_register_style('Forfait_css_v2', plugins_url('css/admin-forfait-v2.css', __FILE__));
-    wp_enqueue_style('Forfait_css_v2');
     wp_enqueue_script('Forfait_js', plugins_url('js/main.js', __FILE__), array('jquery'),'1.0',true);
     wp_enqueue_script('jQuery-Ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', null, null, true);
 }
@@ -150,26 +136,9 @@ function custom_dashboard_help() {
         echo '</thead>';
         echo '<tbody>';
             foreach ($forfaits as $forfait) :
-
-                $forfaitTasks = $DBAction->getListTasks($forfait->id);
-                $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait->id);
-                $forfaitTotalTime = $forfait->total_time;
-
-                if ($tasksTotalTime) {
-                    $totalForfait = new DateTime($forfaitTotalTime, new DateTimeZone('Europe/Paris'));
-                    $totalTasks = new DateTime($tasksTotalTime, new DateTimeZone('Europe/Paris'));
-
-                    $interval = $totalForfait->diff($totalTasks);
-                    $interval = $interval->format('%H:%I:%S');
-
-                    $totalForfaitDisplay = $totalForfait->format('H:i');
-                    $totalTasksDisplay = $totalTasks->format('H:i');
-                } else {
-                    $interval = $forfaitTotalTime;
-                }
-
+                $forfaitTotalTime = $DBAction->getForfaitTime($forfait->id);
             echo '<tr class="overview-tasks">';
-                echo '<th>'.$interval.'</th>';
+                echo '<th>'.$forfaitTotalTime.'</th>';
                 echo '<th>'.$DBAction->getTasksNumberByForfait($forfait->id).'</th>';
             echo '</tr>';
             endforeach;

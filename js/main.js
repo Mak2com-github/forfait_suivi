@@ -1,9 +1,5 @@
-console.log('plugin main.js loaded ;)')
-
-
 function selectForfaitTimeCheck(value)
 {
-    console.log(value);
     if(value){
         var inputTime = document.getElementById("taskTimeInput")
         var labelTime = document.getElementById("taskTimeLabel")
@@ -24,47 +20,77 @@ function selectForfaitTimeCheck(value)
 }
 
 function toggleForms() {
-    var addTaskButton = document.getElementById('addTask')
-    var addTaskForm = document.getElementById('addTaskForm')
-    var addForfaitButton = document.getElementById('addForfait')
-    var addForfaitForm = document.getElementById('addForfaitForm')
-
-    if (addTaskButton) {
-        addTaskButton.addEventListener('click', function() {
-            addTaskForm.classList.toggle('displayBlock')
-        })
-    }
-    if (addForfaitButton) {
-        addForfaitButton.addEventListener('click', function() {
-            addForfaitForm.classList.toggle('displayBlock')
-        })
-    }
-}
-
-function closeForms() {
-    var closeButton = document.getElementsByClassName('closeFormButton')
-    var addTaskForm = document.getElementById('addTaskForm')
-    var addForfaitForm = document.getElementById('addForfaitForm')
+    // Update forfait informations
+    var updateForfaitBtn = document.getElementById('updateForfaitBtn')
     var updateForfaitForm = document.getElementById('updateForfaitForm')
+    // Update forfait time
+    var updateForfaitTimeBtn = document.getElementById('updateForfaitTimeBtn')
+    var updateForfaitTimeForm = document.getElementById('updateForfaitTimeForm')
+    // Add Task Form
+    var addTaskForm = document.getElementById('addTaskForm')
+    var addTaskBtn = document.getElementById('addTaskBtn')
 
-    if (closeButton) {
-        for (var i = 0; i < closeButton.length; i++) {
-            closeButton[i].addEventListener('click', function () {
-
-                if (addTaskForm.classList.contains('displayBlock')) {
-                    addTaskForm.classList.remove('displayBlock')
-                }
-                if (addForfaitForm.classList.contains('displayBlock')) {
-                    addForfaitForm.classList.remove('displayBlock')
-                }
-                if (updateForfaitForm.classList.contains('displayBlock')) {
-                    updateForfaitForm.classList.remove('displayBlock')
-                }
-            })
+    updateForfaitBtn.addEventListener('click', function() {
+        if (updateForfaitForm.classList.contains('displayBlock')) {
+            updateForfaitForm.classList.remove('displayBlock')
+        } else {
+            updateForfaitForm.classList.add('displayBlock')
         }
-    }
-}
+        if (updateForfaitTimeBtn.classList.contains('displayBlock')) {
+            updateForfaitTimeBtn.classList.remove('displayBlock')
+        }
+        if (addTaskForm.classList.contains('displayBlock')) {
+            addTaskForm.classList.remove('displayBlock')
+        }
+    })
+    var closeForfaitBtn = updateForfaitForm.querySelector(".closeFormButton")
+    closeForfaitBtn.addEventListener("click", function() {
+        if (updateForfaitForm.classList.contains('displayBlock')) {
+            updateForfaitForm.classList.remove('displayBlock')
+        }
+    })
 
+    updateForfaitTimeBtn.addEventListener('click', function() {
+        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+            updateForfaitTimeForm.classList.remove('displayBlock')
+        } else {
+            updateForfaitTimeForm.classList.add('displayBlock')
+        }
+        if (updateForfaitForm.classList.contains('displayBlock')) {
+            updateForfaitForm.classList.remove('displayBlock')
+        }
+        if (addTaskForm.classList.contains('displayBlock')) {
+            addTaskForm.classList.remove('displayBlock')
+        }
+    })
+    var closeForfaitTimeBtn = updateForfaitTimeForm.querySelector(".closeFormButton")
+    closeForfaitTimeBtn.addEventListener("click", function() {
+        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+            updateForfaitTimeForm.classList.remove('displayBlock')
+        }
+    })
+
+    addTaskBtn.addEventListener('click', function() {
+        if (addTaskForm.classList.contains('displayBlock')) {
+            addTaskForm.classList.remove('displayBlock')
+        } else {
+            addTaskForm.classList.add('displayBlock')
+        }
+        if (updateForfaitForm.classList.contains('displayBlock')) {
+            updateForfaitForm.classList.remove('displayBlock')
+        }
+        if (updateForfaitTimeForm.classList.contains('displayBlock')) {
+            updateForfaitTimeForm.classList.remove('displayBlock')
+        }
+    })
+    var closeTaskFormBtn = addTaskForm.querySelector(".closeFormButton")
+    closeTaskFormBtn.addEventListener("click", function() {
+        if (addTaskForm.classList.contains('displayBlock')) {
+            addTaskForm.classList.remove('displayBlock')
+        }
+    })
+
+}
 
 function closeFormAlert() {
     var forfaitAlertBloc = document.getElementById('forfaitAlertBloc')
@@ -79,9 +105,10 @@ function closeFormAlert() {
 
 function alertDeleteConfirm() {
     var deleteBtn = document.getElementById('deleteBtn')
-    var updateBtn = document.getElementById('updateBtn')
+    var updateBtn = document.getElementById('updateForfaitTimeBtn')
     var deleteMessage = document.getElementById('deleteAlertMessage')
     var updateMessage = document.getElementById('updateAlertMessage')
+
     if (deleteBtn) {
         deleteBtn.addEventListener('mouseenter', function () {
             deleteMessage.classList.add('displayBlock')
@@ -107,6 +134,5 @@ function alertDeleteConfirm() {
 jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
-    closeForms()
     alertDeleteConfirm()
 })
