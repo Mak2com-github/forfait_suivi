@@ -145,15 +145,18 @@ class DBActions
 
             $task = $this->ValidateDatas($datas);
 
+            $task['usable'] = 1;
+
             $this->decrementForfaitTime($task['forfait_id'], $datas['task_time']);
 
             if (empty($_SESSION['errors'])) {
                 $sql = $this->wpdb->prepare(
                     "INSERT INTO {$this->TasksTable}
-                        (forfait_id, task_time, description, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%s,%s)",
+                        (forfait_id, task_time, description, usable, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%s,%s)",
                     $task['forfait_id'],
                     $task['task_time'],
                     $task['description'],
+                    $task['usable'],
                     $task['created_at'],
                     $task['updated_at']
                 );
@@ -201,10 +204,10 @@ class DBActions
                 "UPDATE {$this->TasksTable} 
                         SET usable = %d,
                             updated_at = %s
-                        WHERE id = %d",
+                        WHERE usable = %d",
                 $datas['usable'],
                 $datas['updated_at'],
-                $datas['id']
+                1
             );
             $this->wpdb->query($sql);
 
@@ -218,7 +221,8 @@ class DBActions
     /*
      * GET NUMBER OF TASKS BY FORFAITS
      */
-    public function getTasksNumberByForfait($forfait_id) {
+    public function getTasksNumberByForfait($forfait_id): ?string
+    {
         $table_forfait = $this->wpdb->prefix.'forfait';
         $table_tasks = $this->wpdb->prefix.'tasks';
 
@@ -231,7 +235,8 @@ class DBActions
     /*
      * GET TOTAL TASKS TIME FOR A FORFAIT
      */
-    public function getTimeTotalsForTasks($forfait_id) {
+    public function getTimeTotalsForTasks($forfait_id): ?string
+    {
         $table_tasks = $this->wpdb->prefix.'tasks';
 
         $sql = "SELECT SEC_TO_TIME( SUM( TIME_TO_SEC( task_time ) ) ) FROM {$table_tasks} WHERE forfait_id=$forfait_id AND usable='1'";
@@ -244,7 +249,8 @@ class DBActions
     /*
      * GET LIST OF ALL TASKS BY FORFAIT ID
      */
-    public function getListTasks($forfait_id){
+    public function getListTasks($forfait_id): array|object|null
+    {
         $table_tasks = $this->wpdb->prefix.'tasks';
         $sql = "SELECT * FROM {$table_tasks} WHERE forfait_id={$forfait_id} ORDER BY `created_at` DESC;";
         $tasksList = $this->wpdb->get_results($sql);
@@ -254,7 +260,8 @@ class DBActions
     /*
      * GET LIST OF ALL FORFAITS
      */
-    public function getListForfaits(){
+    public function getListForfaits(): array|object|null
+    {
         $table_forfait = $this->wpdb->prefix.'forfait';
         $sql = "SELECT * FROM {$table_forfait}";
         $forfaitsList = $this->wpdb->get_results($sql);
@@ -264,7 +271,8 @@ class DBActions
     /*
      * GET A TASK BY ID
      */
-    public function getTaskByID($id){
+    public function getTaskByID($id): array|object|null
+    {
         $table_tasks = $this->wpdb->prefix.'tasks';
         $sql = "SELECT * FROM $table_tasks WHERE id=$id";
         $task = $this->wpdb->get_results($sql);
@@ -274,7 +282,8 @@ class DBActions
     /*
      * GET A FORFAIT BY ID
      */
-    public function getForfaitByID($id){
+    public function getForfaitByID($id): array|object|null
+    {
         $table_forfait = $this->wpdb->prefix.'forfait';
         $sql = "SELECT * FROM $table_forfait WHERE id=$id";
         $forfait = $this->wpdb->get_results($sql);
@@ -284,7 +293,8 @@ class DBActions
     /*
      * GET CREATED AT FOR THE FORFAIT
      */
-    public function getForfaitCreatedAt($id){
+    public function getForfaitCreatedAt($id): string
+    {
         $table_forfait = $this->wpdb->prefix.'forfait';
         $sql = "SELECT created_at FROM $table_forfait WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
@@ -296,7 +306,8 @@ class DBActions
     /*
      * GET UPDATED AT FOR THE FORFAIT
      */
-    public function getForfaitUpdatedAt($id){
+    public function getForfaitUpdatedAt($id): string
+    {
         $table_forfait = $this->wpdb->prefix.'forfait';
         $sql = "SELECT updated_at FROM $table_forfait WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
@@ -308,7 +319,8 @@ class DBActions
     /*
      * GET CREATED AT FOR THE FORFAIT
      */
-    public function getTaskCreatedAt($id){
+    public function getTaskCreatedAt($id): string
+    {
         $table_tasks = $this->wpdb->prefix.'tasks';
         $sql = "SELECT created_at FROM $table_tasks WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
@@ -317,7 +329,8 @@ class DBActions
         return $result;
     }
 
-    public function getForfaitTime($id) {
+    public function getForfaitTime($id): ?string
+    {
         $id = strip_tags($id);
         return $this->wpdb->get_var("SELECT total_time FROM $this->ForfaitTable WHERE id=$id");
     }
@@ -325,7 +338,7 @@ class DBActions
     private function checkTimeFormat($time): bool|string
     {
         // Validation de la valeur soumise
-        if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+        if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
             // Transformation en nombre de secondes
             return $result['result'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
         } else {
@@ -381,10 +394,10 @@ class DBActions
 
     public function TimeToSec($time): float|int|string
     {
-        // Validation de la valeur soumise
-        if (preg_match('/^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
-            // Transformation en nombre de secondes
+        // Validation de la valeur soumise avec 3 chiffre pour les heures
+        if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
             return $result['seconds'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+        // Validation de la valeur soumise avec 2 chiffre pour les heures
         } else {
             return $result['total_time'] = 'Le temps total n\'est pas au bon format';
         }

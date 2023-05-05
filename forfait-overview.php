@@ -9,7 +9,6 @@ function forfait_overview() {
 
     if (!empty($forfait)) {
         $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
-        $remainingTime = $forfait[0]->total_time;
         $remainingTime = $DBAction->getForfaitTime($forfait[0]->id);
     }
     ?>
@@ -44,8 +43,8 @@ function forfait_overview() {
                 </div>
             </div>
             <div class="head-title">
-                <h2>Vue Générale</h2>
-                <p>Liste de tous les forfaits et taches</p>
+                <h2>Gestion du forfait suivi des interventions</h2>
+                <p>Cette page permet de suivre les interventions techniques effectuées sur </p>
                 <p class="post-scriptum">Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
             </div>
         </div>
@@ -61,10 +60,10 @@ function forfait_overview() {
                             <div class="selected-forfait-alert">
                                 <p>Forfait épuisé !</p>
                             </div>
-                        <?php elseif (!empty($remainingTime) && $remainingTime <= '00:01:00') : ?>
+                        <?php elseif (!empty($remainingTime) && $remainingTime <= '01:00:00') : ?>
                             <div class="selected-forfait-alert">
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
-                                <p>Temps Restant : <?= $tasksTotalTime ?></p>
+                                <p>Temps Restant : <?= $remainingTime ?></p>
                             </div>
                         <?php endif; ?>
                         <h3><?= $forfait[0]->title ?></h3>
@@ -114,6 +113,36 @@ function forfait_overview() {
                             </tr>
                         </table>
                     </div>
+                        <div class="forfait-instructions">
+                            <h2>Instructions</h2>
+                            <h3>Cette page permet de suivre les interventions techniques effectuées sur le site du client.</h3>
+                            <div class="instructions-content">
+                                <p>Voici les actions réalisables pour gérer le forfait :</p>
+                                <ul>
+                                    <li>
+                                        <p>Lors de l’installation, il vous sera demandé de créer un forfait. Pour cela, renseignez le Titre du forfait, le temps total du forfait ainsi qu’une description</p>
+                                    </li>
+                                    <li>
+                                        <p>Vous pourrez en suite ajouter des tâches à ce forfait. Le temps de chaque tâche sera débité du forfait. Lors de l’ajout d’une tâche, renseignez une durée ainsi qu’une description. La tâche nouvellement ajoutée sera inscrite dans le tableau de suivi.</p>
+                                    </li>
+                                    <li>
+                                        <p>Si l’icône est verte, elle indique que la tâche est ajoutée sur le forfait en cours et a donc déduit du temps sur ce forfait. Si vous la supprimez elle rendra le temps déduit au forfait. </p>
+                                    </li>
+                                    <li>
+                                        <p>Si l’icône est rouge, elle indique que la tâche est une tâche historique, elle n’est ainsi pas déduite du forfait en cours, et sa suppression n’aura aucune conséquence sur le forfait en cours.</p>
+                                    </li>
+                                    <li>
+                                        <p>Vous pouvez recharger un forfait à tout moment, même s’il est épuisé. Cependant, <strong>ATTENTION</strong> recharger un forfait aura pour résultat de délier les tâches en ajoutées depuis sa création (ou depuis sa dernière recharge).</p>
+                                    </li>
+                                    <li>
+                                        <p>Vous pouvez modifier le titre et la description d’un forfait, cela n’a aucune incidence sur le forfait ou les tâches</p>
+                                    </li>
+                                    <li>
+                                        <p>Vous pouvez aussi supprimer un forfait. <strong>ATTENTION</strong> cela aura pour résultat de supprimer aussi toutes les tâches.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                 </div>
 
                 <?php
@@ -166,13 +195,12 @@ function forfait_overview() {
                             endforeach;
                         else :
                         ?>
-                            <tr>
-                                <th>*</th>
+                            <tr class="default-table-line">
+                                <th></th>
                                 <th>Aucune Tâche</th>
-                                <th>**:**:**</th>
-                                <th>**:**:**</th>
-                                <th>**:**:**</th>
-                                <th>*</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         <?php endif; ?>
                         </tbody>
@@ -187,5 +215,30 @@ function forfait_overview() {
     </div>
 
     <?php
+
+    else :
+        ?>
+        <!-- Add Forfait Form -->
+        <div class="forms-container displayBlock" id="addForfaitForm">
+            <div class="close-form">
+                <button class="closeFormButton">X</button>
+            </div>
+            <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                <div class="forms-container-fields">
+                    <label for="title">Nom</label>
+                    <input name="title" type="text" placeholder="Titre du forfait" required>
+                </div>
+                <div class="forms-container-fields">
+                    <label for="total_time">Temps Total</label>
+                    <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
+                </div>
+                <div class="forms-container-fields">
+                    <label for="description">Description</label>
+                    <textarea name="description" placeholder="Description du forfait" rows="5" required></textarea>
+                </div>
+                <input class="custom-plugin-submit" type="submit" name="save_forfait" value="Ajouter">
+            </form>
+        </div>
+        <?php
     endif;
 }
