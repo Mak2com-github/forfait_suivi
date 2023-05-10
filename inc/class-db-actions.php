@@ -1,24 +1,4 @@
 <?php
-/*
- * INDEX
- *
- * 1. FORFAIT CRUD
- *      - createForfait (create a forfait)
- *      - deleteForfait (delete a forfait)
- *      - updateForfait (update a forfait)
- *
- * 2. TASKS CRUD
- *      - createTask (create a task)
- *      - deleteTask (delete a task)
- *      - updateTask (update a task)
- *
- * 3. SPECIFIC ACTIONS
- *      - getForfaitTitleByID       (get forfait title by forfait id)
- *      - getTasksNumberByForfait   (get number of tasks for a forfait, by forfait id)
- *      - getListTasks              (get all the tasks)
- *      - getListForfaits           (get all the forfaits)
- *      - getForfaitByID            (get a forfait by forfait id)
- */
 class DBActions
 {
     private $wpdb;
