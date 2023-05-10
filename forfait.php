@@ -22,8 +22,8 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-register_activation_hook(__FILE__, 'create_db');
-function create_db(): void
+register_activation_hook(__FILE__, 'fs_create_db');
+function fs_create_db(): void
 {
 
     global $wpdb;
@@ -66,8 +66,8 @@ function create_db(): void
 }
 
 /** INITIALISATION DU PLUGIN **/
-add_action('admin_menu','init_plugin_menu');
-function init_plugin_menu(): void
+add_action('admin_menu','fs_init_plugin_menu');
+function fs_init_plugin_menu(): void
 {
 
     add_menu_page(
@@ -81,8 +81,8 @@ function init_plugin_menu(): void
     );
 }
 
-add_action('admin_init', 'dbOperatorFunctions');
-function dbOperatorFunctions(): void
+add_action('admin_init', 'fs_dbOperatorFunctions');
+function fs_dbOperatorFunctions(): void
 {
     $DBAction = new DBActions();
 
@@ -110,8 +110,8 @@ define('ROOTDIR', plugin_dir_path(__FILE__));
 require_once(ROOTDIR . 'forfait-overview.php');
 
 /** ACTIVATION CSS / JS / BOOTSTRAP **/
-add_action('admin_init', 'forfait_admin_js_css');
-function forfait_admin_js_css(): void
+add_action('admin_init', 'fs_admin_js_css');
+function fs_admin_js_css(): void
 {
     wp_enqueue_script('font-awesome', 'https://kit.fontawesome.com/5397c1f880.js', null, null, true);
     wp_register_style('Forfait_css', plugins_url('css/admin.css', __FILE__));
@@ -120,14 +120,14 @@ function forfait_admin_js_css(): void
     wp_enqueue_script('jQuery-Ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', null, null, true);
 }
 
-add_action('wp_dashboard_setup', 'my_custom_dashboard_widgets');
-function my_custom_dashboard_widgets(): void
+add_action('wp_dashboard_setup', 'fs_custom_dashboard_widgets');
+function fs_custom_dashboard_widgets(): void
 {
     global $wp_meta_boxes;
-    wp_add_dashboard_widget('custom_help_widget', 'Forfait Suivi', 'custom_dashboard_help');
+    wp_add_dashboard_widget('custom_help_widget', 'Forfait Suivi', 'fs_custom_dashboard_help');
 }
 
-function custom_dashboard_help(): void
+function fs_custom_dashboard_help(): void
 {
     echo '<p>Prévisualisation des forfaits de suivi : </p>';
     $DBAction = new DBActions();
