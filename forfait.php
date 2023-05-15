@@ -8,7 +8,7 @@
  * Plugin Name:       Forfait Suivi
  * Plugin URI:        https://mak2com.fr
  * Description:       Permet la création de forfait de suivi des intervention techniques effectués pour le site du client, ainsi que la création et la gestion des tâches effectués.
- * Version:           3.1.6
+ * Version:           3.1.7
  * Author:            Alexandre Celier
  * Author URI:        https://mak2com.fr/
  * License:           GPL-2.0+
