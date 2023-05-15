@@ -66,9 +66,13 @@ function forfait_overview(): void
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
                                 <p>Temps Restant : <?= $remainingTime ?></p>
                             </div>
-                        <?php endif; ?>
-                        <h3><?= $forfait[0]->title ?></h3>
-                        <p class="forfait-description"><?= $forfait[0]->description ?></p>
+                        <?php endif;
+
+                        $title = htmlspecialchars_decode($forfait[0]->title, ENT_QUOTES);
+                        $description = htmlspecialchars_decode($forfait[0]->description, ENT_QUOTES);
+                        ?>
+                        <h3><?= stripslashes($title) ?></h3>
+                        <p class="forfait-description"><?= stripslashes($description) ?></p>
                         <table class="selected-forfait-table">
                             <tr>
                                 <th>Nombres de tâches attribuées: </th>
@@ -171,6 +175,8 @@ function forfait_overview(): void
                         $tasks = $DBAction->getListTasks($forfait[0]->id);
                         if (!empty($tasks)) :
                             foreach ($tasks as $task) :
+                                $task->description = stripslashes($task->description);
+                                $task->description = htmlspecialchars_decode($task->description, ENT_QUOTES);
                             ?>
                                 <tr class="overview-tasks <?= $task->forfait_id ?>">
                                     <th scope="row">

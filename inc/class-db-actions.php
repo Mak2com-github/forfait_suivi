@@ -405,7 +405,7 @@ class DBActions
             if (empty($datas['title'])) {
                 $errors['title'] = 'Le titre est vide';
             } else {
-                $result['title'] = strip_tags($datas['title']);
+                $result['title'] = htmlspecialchars($datas['title'], ENT_QUOTES);
             }
         }
         // Total Time
@@ -438,7 +438,7 @@ class DBActions
             if (empty($datas['description'])) {
                 $errors['description'] = 'La description est vide';
             } else {
-                $result['description'] = htmlspecialchars($datas['description']);
+                $result['description'] = htmlspecialchars($datas['description'], ENT_QUOTES);
             }
         }
         if (isset($datas['forfait_id'])) {
