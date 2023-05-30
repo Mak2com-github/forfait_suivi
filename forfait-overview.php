@@ -46,7 +46,8 @@ function forfait_overview(): void
             <div class="head-title">
                 <h2>Gestion du forfait suivi des interventions</h2>
                 <p>Cette page permet de suivre les interventions techniques effectuées sur </p>
-                <p class="post-scriptum">Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
+                <p>Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
+                <p>Les tâches avec un fond de couleur <span class="pp-gradient"></span> sont les tâches effectuées sur des interventions pour l'agence Première Page</p>
             </div>
         </div>
 
@@ -178,7 +179,7 @@ function forfait_overview(): void
                                 $task->description = stripslashes($task->description);
                                 $task->description = htmlspecialchars_decode($task->description, ENT_QUOTES);
                             ?>
-                                <tr class="overview-tasks <?= $task->forfait_id ?>">
+                                <tr class="overview-tasks <?= $task->forfait_id ?> <?php if ($task->is_pp === '1') : echo 'pp-task'; endif; ?>">
                                     <th scope="row">
                                         <?php if ($task->usable === '0') : ?>
                                         <div class="usable-false"></div>

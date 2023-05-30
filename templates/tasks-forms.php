@@ -30,6 +30,10 @@
                 <label for="description">Description</label>
                 <textarea name="description" placeholder="Description de la tâche" rows="5" required></textarea>
             </div>
+            <div class="forms-container-fields field-row">
+                <input type="checkbox" name="is_pp">
+                <label for="is_pp">Tâche première page ?</label>
+            </div>
             <input id="addTaskSubmit" class="custom-plugin-submit" type="submit" name="save_task" value="Ajouter">
         </form>
     </div>

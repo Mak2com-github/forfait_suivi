@@ -8,7 +8,7 @@
  * Plugin Name:       Forfait Suivi
  * Plugin URI:        https://mak2com.fr
  * Description:       Permet la création de forfait de suivi des intervention techniques effectués pour le site du client, ainsi que la création et la gestion des tâches effectués.
- * Version:           3.1.7
+ * Version:           3.1.8
  * Author:            Alexandre Celier
  * Author URI:        https://mak2com.fr/
  * License:           GPL-2.0+
@@ -42,7 +42,7 @@ function fs_create_db(): void
             `total_time` time NOT NULL,
             `description` varchar(250) NOT NULL,
             `created_at` datetime NULL,
-            `updated_at` datetime NULL 
+            `updated_at` datetime NULL
             ) ENGINE=InnoDB DEFAULT CHARSET `$wbdb_charset` COLLATE `$wpdb_collate`";
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta( $sql_forfait );
@@ -56,6 +56,7 @@ function fs_create_db(): void
             task_time time NOT NULL,
             description varchar(500) NULL,
             usable TINYINT NULL,
+            is_pp TINYINT NOT NULL DEFAULT 0,
             created_at datetime NULL,
             updated_at datetime NULL,
             FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
