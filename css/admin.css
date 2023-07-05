@@ -256,36 +256,6 @@
     border-radius: 0;
 }
 
-.field-row {
-    flex-direction: row;
-    justify-content: center;
-}
-.field-row input {
-    height: 20px;
-    width: 20px;
-    border-radius: 50px;
-    margin: auto 0;
-}
-.field-row label {
-    padding-bottom: 0;
-    margin-left: 15px;
-}
-
-.pp-task {
-    background: linear-gradient(90deg,#e20a7f 0,#8e67a9 50%,#28316f 100%);
-}
-.pp-task th {
-    color: white;
-}
-
-.pp-gradient {
-    width: 35px;
-    height: 15px;
-    display: inline-block;
-    vertical-align: middle;
-    background: linear-gradient(90deg,#e20a7f 0,#8e67a9 50%,#28316f 100%);
-}
-
 .custom-plugin-submit {
     margin-left: 25%;
     width: 50%;

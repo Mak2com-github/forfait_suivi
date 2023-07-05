@@ -140,4 +140,5 @@ jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
+    jQuery('#wysiwygArea').wpEditor();
 })
