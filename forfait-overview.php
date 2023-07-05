@@ -17,26 +17,14 @@ function forfait_overview(): void
         <div class="head">
             <p id="deleteAlertMessage" class="alert-message">Attention ! La suppression du forfait, entrainera la suppression des tâches qui lui sont associées !</p>
             <p id="updateAlertMessage" class="alert-message">Attention ! La modification du forfait aura pour effet de détacher les tâches de ce forfait </br> Elles seront toujours présentes mais ne seront plus comptabilisées sur ce forfait.</p>
-            <?php
-            if (isset($_SESSION['create_success'])) :
-                echo '<div class="session-msg session-success"><p>'.$_SESSION['create_success'].'<i class="fas fa-smile"></i></p></div>';
-            elseif (isset($_SESSION['delete_success'])) :
-                echo '<div class="session-msg session-success"><p>'.$_SESSION['delete_success'].'<i class="fas fa-smile"></i></p></div>';
-            elseif (isset($_SESSION['errors'])) :
-                echo '<div class="session-msg session-alert">';
-                foreach ($_SESSION['errors'] as $error) :
-                    echo '<p>'.$error.'</p>';
-                endforeach;
-                echo '<i class="fas fa-frown"></i></div>';
-            endif;
-            ?>
+            <?php include "templates/head-messages.php"; ?>
         </div>
         <div class="overview-head">
             <div class="status-legend-main">
                 <h3>Status</h3>
                 <div class="status-legend-block">
                     <div class="usable-false"></div>
-                    <p>Tâche débitée sur un ancien forfait</p>
+                    <p>Tâche débitée sur le forfait épuisé</p>
                 </div>
                 <div class="status-legend-block">
                     <div class="usable-true"></div>
