@@ -136,7 +136,26 @@ function alertDeleteConfirm() {
     }
 }
 
+function formatTimeNumber() {
+    var taskTime = document.querySelector("input[name='task_time']")
+    var forfaitTime = document.querySelector("input[name='total_time']")
+    forfaitTime.addEventListener('keyup', function() {
+        var input = this
+        var value = input.value.replace(/:/g, '')
+        var newValue = ''
+        for (var i = 0; i < value.length; i++) {
+            if (i % 2 === 1 && i !== value.length - 1) {
+                newValue += value[i] + ":"
+            } else {
+                newValue += value[i]
+            }
+        }
+        input.value = newValue
+    })
+}
+
 jQuery(document).ready( function () {
+    formatTimeNumber()
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
