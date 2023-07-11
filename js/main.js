@@ -154,6 +154,20 @@ function formatTimeNumber() {
     })
 }
 
+function manageColorField(element) {
+    var formColorBlock = element.parentNode
+
+    if (element.classList.contains('add-color')) {
+        var clonedNode = formColorBlock.cloneNode(true)
+        formColorBlock.after(clonedNode)
+        element.classList.remove('add-color')
+        element.classList.add('remove-color')
+        element.innerHTML = "-"
+    } else {
+        formColorBlock.remove()
+    }
+}
+
 jQuery(document).ready( function () {
     formatTimeNumber()
     closeFormAlert()

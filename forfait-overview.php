@@ -236,7 +236,7 @@ function forfait_overview(): void
                 </div>
                 <div class="forms-container-fields">
                     <label for="total_time">Temps Total</label>
-                    <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
+                    <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$" maxlength="8">
                 </div>
                 <div class="forms-container-fields">
                     <label for="description">Description</label>
