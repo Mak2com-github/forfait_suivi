@@ -1,6 +1,5 @@
 <?php
 require_once('inc/class-db-actions.php');
-
 function forfait_overview(): void
 {
     global $wpdb;

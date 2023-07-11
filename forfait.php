@@ -113,7 +113,6 @@ if (version_compare($current_version, '3.1.7', '>=')) {
 add_action('admin_menu','fs_init_plugin_menu');
 function fs_init_plugin_menu(): void
 {
-
     add_menu_page(
         'Forfait Suivi',
         'Forfait Suivi',
