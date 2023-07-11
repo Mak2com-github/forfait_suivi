@@ -5,10 +5,10 @@ if (!defined('WP_UNINSTALL_PLUGIN')) exit;
 // delete database table
 global $wpdb;
 
-$table_tasks = $wpdb->prefix.'tasks';
+$table_tasks = $wpdb->prefix.'fs_tasks';
 $wpdb->query("DROP TABLE IF EXISTS $table_tasks");
 
-$table_forfait = $wpdb->prefix.'forfait';
+$table_forfait = $wpdb->prefix.'fs_forfait';
 $wpdb->query("DROP TABLE IF EXISTS $table_forfait");
 
 $table_settings = $wpdb->prefix.'fs_settings';
