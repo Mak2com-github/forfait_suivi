@@ -16,7 +16,7 @@
                 <?php
                 global $wpdb;
                 $DBActions = new DBActions();
-                $forfait_table = $wpdb->prefix. "forfait";
+                $forfait_table = $wpdb->prefix. "fs_forfait";
                 $forfait = $wpdb->get_results("SELECT * FROM $forfait_table");
                 $forfaitTotalTime = $DBActions->getForfaitTime($forfait[0]->id);
                 ?>

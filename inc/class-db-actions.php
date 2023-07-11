@@ -4,12 +4,14 @@ class DBActions
     private $wpdb;
     private string $ForfaitTable;
     private string $TasksTable;
+    private string $SettingsTable;
 
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->ForfaitTable = $this->wpdb->prefix . "forfait";
-        $this->TasksTable = $this->wpdb->prefix . "tasks";
+        $this->ForfaitTable = $this->wpdb->prefix . "fs_forfait";
+        $this->TasksTable = $this->wpdb->prefix . "fs_tasks";
+        $this->SettingsTable = $this->wpdb->prefix . "fs_settings";
     }
     /*
      * CREATE A FORFAIT
@@ -216,8 +218,8 @@ class DBActions
      */
     public function getTasksNumberByForfait($forfait_id): ?string
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
+        $table_tasks = $this->wpdb->prefix.'fs_tasks';
 
         $sql = "SELECT count(*) FROM $table_tasks as tblTasks JOIN $table_forfait as tblForfait WHERE tblTasks.forfait_id=$forfait_id AND tblTasks.usable=1 AND tblForfait.id=$forfait_id";
         $forfaitCount = $this->wpdb->get_var($sql);
@@ -230,7 +232,7 @@ class DBActions
      */
     public function getTimeTotalsForTasks($forfait_id): ?string
     {
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_tasks = $this->wpdb->prefix.'fs_tasks';
 
         $sql = "SELECT SEC_TO_TIME( SUM( TIME_TO_SEC( task_time ) ) ) FROM {$table_tasks} WHERE forfait_id=$forfait_id AND usable='1'";
 
@@ -244,7 +246,7 @@ class DBActions
      */
     public function getListTasks($forfait_id): array|object|null
     {
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_tasks = $this->wpdb->prefix.'fs_tasks';
         $sql = "SELECT * FROM {$table_tasks} WHERE forfait_id={$forfait_id} ORDER BY `created_at` DESC;";
         $tasksList = $this->wpdb->get_results($sql);
         return $tasksList;
@@ -255,7 +257,7 @@ class DBActions
      */
     public function getListForfaits(): array|object|null
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
         $sql = "SELECT * FROM {$table_forfait}";
         $forfaitsList = $this->wpdb->get_results($sql);
         return $forfaitsList;
@@ -266,7 +268,7 @@ class DBActions
      */
     public function getTaskByID($id): array|object|null
     {
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_tasks = $this->wpdb->prefix.'fs_tasks';
         $sql = "SELECT * FROM $table_tasks WHERE id=$id";
         $task = $this->wpdb->get_results($sql);
         return $task;
@@ -277,7 +279,7 @@ class DBActions
      */
     public function getForfaitByID($id): array|object|null
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
         $sql = "SELECT * FROM $table_forfait WHERE id=$id";
         $forfait = $this->wpdb->get_results($sql);
         return $forfait;
@@ -288,7 +290,7 @@ class DBActions
      */
     public function getForfaitCreatedAt($id): string
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
         $sql = "SELECT created_at FROM $table_forfait WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
@@ -301,7 +303,7 @@ class DBActions
      */
     public function getForfaitUpdatedAt($id): string
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
         $sql = "SELECT updated_at FROM $table_forfait WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
@@ -314,7 +316,7 @@ class DBActions
      */
     public function getTaskCreatedAt($id): string
     {
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_tasks = $this->wpdb->prefix.'fs_tasks';
         $sql = "SELECT created_at FROM $table_tasks WHERE id=$id";
         $result = $this->wpdb->get_var($sql);
         $result = new DateTime($result, new DateTimeZone('Europe/Paris'));

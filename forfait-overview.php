@@ -4,7 +4,7 @@ function forfait_overview(): void
 {
     global $wpdb;
     $DBAction = new DBActions();
-    $forfait_table = $wpdb->prefix. "forfait";
+    $forfait_table = $wpdb->prefix. "fs_forfait";
     $forfait = $wpdb->get_results("SELECT * FROM $forfait_table");
 
     if (!empty($forfait)) {
