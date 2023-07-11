@@ -123,7 +123,7 @@ function alertDeleteConfirm() {
         deleteBtn.addEventListener('mouseleave', function () {
             deleteMessage.classList.remove('displayBlock')
         })
-    }       
+    }
     if (updateBtn) {
         updateBtn.addEventListener('mouseenter', function () {
             updateMessage.classList.add('displayBlock')
@@ -140,5 +140,4 @@ jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
-    jQuery('#wysiwygArea').wpEditor();
 })

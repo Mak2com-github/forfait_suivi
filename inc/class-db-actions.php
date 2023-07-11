@@ -126,20 +126,33 @@ class DBActions
             $task = $this->ValidateDatas($datas);
             $task['usable'] = 1;
 
-            $this->decrementForfaitTime($task['forfait_id'], $datas['task_time']);
-
             if (empty($_SESSION['errors'])) {
+                if (!isset($task['is_pp'])) {
+                    $task['is_pp'] = 0;
+                }
+                if ($task['is_pp'] === 'on') {
+                    $task['is_pp'] = 1;
+                }
                 $sql = $this->wpdb->prepare(
                     "INSERT INTO {$this->TasksTable}
-                        (forfait_id, task_time, description, usable, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%s,%s)",
+                        (forfait_id, task_time, description, usable, is_pp, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%d,%s,%s)",
                     $task['forfait_id'],
                     $task['task_time'],
                     $task['description'],
                     $task['usable'],
+                    $task['is_pp'],
                     $task['created_at'],
                     $task['updated_at']
                 );
                 $this->wpdb->query($sql);
+
+                if ($this->wpdb->last_error) {
+                    echo "Error: " . $this->wpdb->last_error . "<br>";
+                    echo "Query: " . $this->wpdb->last_query . "<br>";
+                } else {
+                    $this->decrementForfaitTime($task['forfait_id'], $datas['task_time']);
+                }
+
                 $_SESSION['create_success'] = "Tâche Ajoutée !";
             }
         }
@@ -377,7 +390,7 @@ class DBActions
         // Validation de la valeur soumise avec 3 chiffre pour les heures
         if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
             return $result['seconds'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
-        // Validation de la valeur soumise avec 2 chiffre pour les heures
+            // Validation de la valeur soumise avec 2 chiffre pour les heures
         } else {
             return $result['total_time'] = 'Le temps total n\'est pas au bon format';
         }
@@ -446,6 +459,9 @@ class DBActions
         }
         if (isset($datas['id'])) {
             $result['id'] = strip_tags($datas['id']);
+        }
+        if (isset($datas['is_pp'])) {
+            $result['is_pp'] = strip_tags($datas['is_pp']);
         }
 
         // TimeStamps

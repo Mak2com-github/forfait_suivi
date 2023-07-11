@@ -30,9 +30,9 @@
         </div>
         <form method="post" action="admin.php?page=forfait_suivi">
             <?php if ($forfait[0]->total_time > "00:00:00") : ?>
-            <div class="form-information">
-                <p>Il reste <?= $forfait[0]->total_time ?> sur se forfait <br>Le temps que vous ajoutez sera additionné au temps restant</p>
-            </div>
+                <div class="form-information">
+                    <p>Il reste <?= $forfait[0]->total_time ?> sur se forfait <br>Le temps que vous ajoutez sera additionné au temps restant</p>
+                </div>
             <?php endif; ?>
             <input type="hidden" name="id" value="<?php if(!empty($forfait[0]->id)) { echo $forfait[0]->id; } ?>">
             <div class="forms-container-fields">
