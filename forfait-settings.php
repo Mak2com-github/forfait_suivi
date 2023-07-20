@@ -20,9 +20,9 @@ function forfait_settings(): void
             ?>
         </div>
         <h1>Réglages</h1>
-        <div class="settings_body">
-            <div class="settings_col_left">
-                <div class="settings_forms">
+        <div class="provider_body">
+            <div class="provider_col_left">
+                <div class="provider_forms">
                     <h2>Ajout d'un prestataire</h2>
                     <p>Vous pouvez ajouter un prestataire autre que l'agence, qui interviendra sur des modifications qui devront être décompté du forfait</p>
                     <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
@@ -38,7 +38,7 @@ function forfait_settings(): void
                             <label for="color">Code couleur</label>
                             <div class="form-color-row">
                                 <div class="form-color-block">
-                                    <input name="color" type="color" value="" required>
+                                    <input name="color-1" type="color" value="#000000" required>
                                     <span class="color-btn add-color" onclick="manageColorField(this)">+</span>
                                 </div>
                             </div>
@@ -48,12 +48,35 @@ function forfait_settings(): void
                     </form>
                 </div>
             </div>
-            <div class="settings_col_right">
-                <div class="settings_listing_row">
+            <div class="providers_col_right">
+                <div class="providers_listing_row">
                     <h3>Liste des prestataires</h3>
-                </div>
-                <div class="settings_listing_row">
-                    <h3>Liste des réglages</h3>
+                    <table class="">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Couleur</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data 1</td>
+                                <td>Data 2</td>
+                                <td>Data 3</td>
+                            </tr>
+                            <tr>
+                                <td>Data 4</td>
+                                <td>Data 5</td>
+                                <td>Data 6</td>
+                            </tr>
+                            <tr>
+                                <td>Data 7</td>
+                                <td>Data 8</td>
+                                <td>Data 9</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ function fs_create_db(): void
     $wbdb_charset = $wpdb->charset;
     $table_forfait = $wpdb->prefix.'fs_forfait';
     $table_tasks = $wpdb->prefix.'fs_tasks';
-    $table_settings = $wpdb->prefix.'fs_settings';
+    $table_provider = $wpdb->prefix.'fs_provider';
 
     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_forfait'") != $table_forfait ) {
         $sql_forfait =
@@ -55,7 +55,7 @@ function fs_create_db(): void
             task_time time NOT NULL,
             description varchar(500) NULL,
             usable TINYINT NULL,
-            is_external TINYINT NOT NULL DEFAULT 0,
+            is_provider TINYINT NOT NULL DEFAULT 0,
             created_at datetime NULL,
             updated_at datetime NULL,
             FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
@@ -64,18 +64,18 @@ function fs_create_db(): void
         dbDelta( $sql_tasks );
     }
 
-    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_settings'") != $table_settings ) {
-        $sql_settings =
-            "CREATE TABLE IF NOT EXISTS {$table_settings} (
+    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_provider'") != $table_provider ) {
+        $sql_provider =
+            "CREATE TABLE IF NOT EXISTS {$table_provider} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             name varchar(250) NULL,
             description varchar(500) NULL,
-            color varchar(250) NULL,
+            color JSON NULL,
             created_at datetime NULL,
             updated_at datetime NULL
             ) ENGINE=InnoDB DEFAULT CHARSET {$wbdb_charset} COLLATE {$wpdb_collate}";
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta( $sql_settings );
+        dbDelta( $sql_provider );
     }
 }
 
@@ -125,6 +125,9 @@ function fs_dbOperatorFunctions(): void
     }
     if (isset($_POST['delete_task'])) {
         $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
+    }
+    if (isset($_POST['save_setting'])) {
+        $DBAction->addSettingProvider($_POST);
     }
 }
 

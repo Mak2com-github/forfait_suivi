@@ -159,6 +159,8 @@ function manageColorField(element) {
 
     if (element.classList.contains('add-color')) {
         var clonedNode = formColorBlock.cloneNode(true)
+        var clonedInput = clonedNode.querySelector("input")
+        clonedInput.setAttribute('name', 'color-' + (formColorBlock.parentNode.children.length + 1))
         formColorBlock.after(clonedNode)
         element.classList.remove('add-color')
         element.classList.add('remove-color')

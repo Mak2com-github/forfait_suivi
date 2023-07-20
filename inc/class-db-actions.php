@@ -4,14 +4,14 @@ class DBActions
     private $wpdb;
     private string $ForfaitTable;
     private string $TasksTable;
-    private string $SettingsTable;
+    private string $ProviderTable;
 
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->ForfaitTable = $this->wpdb->prefix . "fs_forfait";
         $this->TasksTable = $this->wpdb->prefix . "fs_tasks";
-        $this->SettingsTable = $this->wpdb->prefix . "fs_settings";
+        $this->ProviderTable = $this->wpdb->prefix . "fs_provider";
     }
     /*
      * CREATE A FORFAIT
@@ -129,20 +129,20 @@ class DBActions
             $task['usable'] = 1;
 
             if (empty($_SESSION['errors'])) {
-                if (!isset($task['is_pp'])) {
-                    $task['is_pp'] = 0;
+                if (!isset($task['is_external'])) {
+                    $task['is_external'] = 0;
                 }
-                if ($task['is_pp'] === 'on') {
-                    $task['is_pp'] = 1;
+                if ($task['is_external'] === 'on') {
+                    $task['is_external'] = 1;
                 }
                 $sql = $this->wpdb->prepare(
                     "INSERT INTO {$this->TasksTable}
-                        (forfait_id, task_time, description, usable, is_pp, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%d,%s,%s)",
+                        (forfait_id, task_time, description, usable, is_external, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%d,%s,%s)",
                     $task['forfait_id'],
                     $task['task_time'],
                     $task['description'],
                     $task['usable'],
-                    $task['is_pp'],
+                    $task['is_external'],
                     $task['created_at'],
                     $task['updated_at']
                 );
@@ -387,6 +387,27 @@ class DBActions
         }
     }
 
+    /*
+     * Settings Actions
+     */
+    public function addSettingProvider($datas): void
+    {
+        if (!empty($datas)) {
+            $provider = $this->ValidateDatas($datas);
+            $sql = $this->wpdb->prepare(
+                "INSERT INTO {$this->ProviderTable}
+                        (name, description, color, created_at, updated_at) VALUES (%s,%s,%s,%s,%s)",
+                $provider['title'],
+                $provider['description'],
+                $provider['color'],
+                $provider['created_at'],
+                $provider['updated_at']
+            );
+            $this->wpdb->query($sql);
+            $_SESSION['create_success'] = "Prestataire Ajouté !";
+        }
+    }
+
     public function TimeToSec($time): float|int|string
     {
         // Validation de la valeur soumise avec 3 chiffre pour les heures
@@ -462,8 +483,20 @@ class DBActions
         if (isset($datas['id'])) {
             $result['id'] = strip_tags($datas['id']);
         }
-        if (isset($datas['is_pp'])) {
-            $result['is_pp'] = strip_tags($datas['is_pp']);
+        if (isset($datas['is_external'])) {
+            $result['is_external'] = strip_tags($datas['is_external']);
+        }
+
+        // Provider colors
+        if (isset($datas['color-1'])) {
+            $colors = array();
+            foreach ($datas as $key => $value) {
+                if (preg_match('/^color-\d+$/', $key)) {
+                    $colors[] = $value;
+                }
+            }
+            $jsonColors = json_encode($colors);
+            $result['color'] = $jsonColors;
         }
 
         // TimeStamps
