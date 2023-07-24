@@ -127,7 +127,7 @@ function fs_dbOperatorFunctions(): void
         $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
     }
     if (isset($_POST['save_setting'])) {
-        $DBAction->addSettingProvider($_POST);
+        $DBAction->addProvider($_POST);
     }
 }
 

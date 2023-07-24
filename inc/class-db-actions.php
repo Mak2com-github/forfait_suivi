@@ -14,7 +14,7 @@ class DBActions
         $this->ProviderTable = $this->wpdb->prefix . "fs_provider";
     }
     /*
-     * CREATE A FORFAIT
+     * Forfait Actions
      */
     public function createForfait($datas): void
     {
@@ -34,9 +34,6 @@ class DBActions
         }
     }
 
-    /*
-     * DELETE A FORFAIT
-     */
     public function deleteForfait($id): void
     {
         $id = strip_tags($id);
@@ -52,9 +49,6 @@ class DBActions
         }
     }
 
-    /*
-     * UPDATE A FORFAIT
-     */
     public function updateForfait($datas): void
     {
         if (!empty($datas)) {
@@ -78,9 +72,6 @@ class DBActions
         }
     }
 
-    /*
-     * UPDATE A FORFAIT
-     */
     public function updateForfaitTime($datas): void
     {
         if (!empty($datas)) {
@@ -118,8 +109,88 @@ class DBActions
         }
     }
 
+    public function getListForfaits(): array|object|null
+    {
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
+        $sql = "SELECT * FROM {$table_forfait}";
+        $forfaitsList = $this->wpdb->get_results($sql);
+        return $forfaitsList;
+    }
+
+    public function getForfaitCreatedAt($id): string
+    {
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
+        $sql = "SELECT created_at FROM $table_forfait WHERE id=$id";
+        $result = $this->wpdb->get_var($sql);
+        $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
+        $result = $result->format('d-m-Y');
+        return $result;
+    }
+
+    public function getForfaitUpdatedAt($id): string
+    {
+        $table_forfait = $this->wpdb->prefix.'fs_forfait';
+        $sql = "SELECT updated_at FROM $table_forfait WHERE id=$id";
+        $result = $this->wpdb->get_var($sql);
+        $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
+        $result = $result->format('d-m-Y');
+        return $result;
+    }
+
+    public function getForfaitTime($id): ?string
+    {
+        $id = strip_tags($id);
+        return $this->wpdb->get_var("SELECT total_time FROM $this->ForfaitTable WHERE id=$id");
+    }
+
+    private function incrementForfaitTime($id, $time): void
+    {
+        $forfaitTime = $this->getForfaitTime($id);
+        $forfaitSeconds = $this->TimeToSec($forfaitTime);
+        $tasksSeconds = $this->TimeToSec($time);
+        $remainingTime = $forfaitSeconds + $tasksSeconds;
+
+        $updatedAt = date('Y-m-d H:i:s', time());
+
+        $sql = $this->wpdb->prepare(
+            "UPDATE {$this->ForfaitTable} 
+                    SET total_time = (SEC_TO_TIME(%d)),
+                        updated_at = %s
+                    WHERE id = %d",
+            $remainingTime,
+            $updatedAt,
+            $id
+        );
+        $this->wpdb->query($sql);
+    }
+
+    private function decrementForfaitTime($id, $time): void
+    {
+        $forfaitTime = $this->getForfaitTime($id);
+        $forfaitSeconds = $this->TimeToSec($forfaitTime);
+        $tasksSeconds = $this->TimeToSec($time);
+        if ($tasksSeconds > $forfaitSeconds) {
+            $_SESSION['errors'] = array("Le temps de la tâche dépasse le temps disponible sur le forfait");
+        } else {
+            $remainingTime = $forfaitSeconds - $tasksSeconds;
+
+            $updatedAt = date('Y-m-d H:i:s', time());
+
+            $sql = $this->wpdb->prepare(
+                "UPDATE {$this->ForfaitTable} 
+                SET total_time = (SEC_TO_TIME(%d)),
+                    updated_at = %s
+                WHERE id = %d",
+                $remainingTime,
+                $updatedAt,
+                $id
+            );
+            $this->wpdb->query($sql);
+        }
+    }
+
     /*
-     * CREATE A TASK
+     * Tasks Actions
      */
     public function createTask($datas): void
     {
@@ -160,9 +231,6 @@ class DBActions
         }
     }
 
-    /*
-     * DELETE TASK BY ID
-     */
     public function deleteTask($id, $forfait, $time): void
     {
         $id = strip_tags($id);
@@ -213,9 +281,6 @@ class DBActions
         }
     }
 
-    /*
-     * GET NUMBER OF TASKS BY FORFAITS
-     */
     public function getTasksNumberByForfait($forfait_id): ?string
     {
         $table_forfait = $this->wpdb->prefix.'fs_forfait';
@@ -227,9 +292,6 @@ class DBActions
         return $forfaitCount;
     }
 
-    /*
-     * GET TOTAL TASKS TIME FOR A FORFAIT
-     */
     public function getTimeTotalsForTasks($forfait_id): ?string
     {
         $table_tasks = $this->wpdb->prefix.'fs_tasks';
@@ -241,9 +303,6 @@ class DBActions
         return $tasksTotalTime;
     }
 
-    /*
-     * GET LIST OF ALL TASKS BY FORFAIT ID
-     */
     public function getListTasks($forfait_id): array|object|null
     {
         $table_tasks = $this->wpdb->prefix.'fs_tasks';
@@ -252,68 +311,6 @@ class DBActions
         return $tasksList;
     }
 
-    /*
-     * GET LIST OF ALL FORFAITS
-     */
-    public function getListForfaits(): array|object|null
-    {
-        $table_forfait = $this->wpdb->prefix.'fs_forfait';
-        $sql = "SELECT * FROM {$table_forfait}";
-        $forfaitsList = $this->wpdb->get_results($sql);
-        return $forfaitsList;
-    }
-
-    /*
-     * GET A TASK BY ID
-     */
-    public function getTaskByID($id): array|object|null
-    {
-        $table_tasks = $this->wpdb->prefix.'fs_tasks';
-        $sql = "SELECT * FROM $table_tasks WHERE id=$id";
-        $task = $this->wpdb->get_results($sql);
-        return $task;
-    }
-
-    /*
-     * GET A FORFAIT BY ID
-     */
-    public function getForfaitByID($id): array|object|null
-    {
-        $table_forfait = $this->wpdb->prefix.'fs_forfait';
-        $sql = "SELECT * FROM $table_forfait WHERE id=$id";
-        $forfait = $this->wpdb->get_results($sql);
-        return $forfait;
-    }
-
-    /*
-     * GET CREATED AT FOR THE FORFAIT
-     */
-    public function getForfaitCreatedAt($id): string
-    {
-        $table_forfait = $this->wpdb->prefix.'fs_forfait';
-        $sql = "SELECT created_at FROM $table_forfait WHERE id=$id";
-        $result = $this->wpdb->get_var($sql);
-        $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
-        $result = $result->format('d-m-Y');
-        return $result;
-    }
-
-    /*
-     * GET UPDATED AT FOR THE FORFAIT
-     */
-    public function getForfaitUpdatedAt($id): string
-    {
-        $table_forfait = $this->wpdb->prefix.'fs_forfait';
-        $sql = "SELECT updated_at FROM $table_forfait WHERE id=$id";
-        $result = $this->wpdb->get_var($sql);
-        $result = new DateTime($result, new DateTimeZone('Europe/Paris'));
-        $result = $result->format('d-m-Y');
-        return $result;
-    }
-
-    /*
-     * GET CREATED AT FOR THE FORFAIT
-     */
     public function getTaskCreatedAt($id): string
     {
         $table_tasks = $this->wpdb->prefix.'fs_tasks';
@@ -324,73 +321,10 @@ class DBActions
         return $result;
     }
 
-    public function getForfaitTime($id): ?string
-    {
-        $id = strip_tags($id);
-        return $this->wpdb->get_var("SELECT total_time FROM $this->ForfaitTable WHERE id=$id");
-    }
-
-    private function checkTimeFormat($time): bool|string
-    {
-        // Validation de la valeur soumise
-        if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
-            // Transformation en nombre de secondes
-            return $result['result'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
-        } else {
-            return false;
-        }
-    }
-
-    private function incrementForfaitTime($id, $time): void
-    {
-        $forfaitTime = $this->getForfaitTime($id);
-        $forfaitSeconds = $this->TimeToSec($forfaitTime);
-        $tasksSeconds = $this->TimeToSec($time);
-        $remainingTime = $forfaitSeconds + $tasksSeconds;
-
-        $updatedAt = date('Y-m-d H:i:s', time());
-
-        $sql = $this->wpdb->prepare(
-            "UPDATE {$this->ForfaitTable} 
-                    SET total_time = (SEC_TO_TIME(%d)),
-                        updated_at = %s
-                    WHERE id = %d",
-            $remainingTime,
-            $updatedAt,
-            $id
-        );
-        $this->wpdb->query($sql);
-    }
-
-    private function decrementForfaitTime($id, $time): void
-    {
-        $forfaitTime = $this->getForfaitTime($id);
-        $forfaitSeconds = $this->TimeToSec($forfaitTime);
-        $tasksSeconds = $this->TimeToSec($time);
-        if ($tasksSeconds > $forfaitSeconds) {
-            $_SESSION['errors'] = array("Le temps de la tâche dépasse le temps disponible sur le forfait");
-        } else {
-            $remainingTime = $forfaitSeconds - $tasksSeconds;
-
-            $updatedAt = date('Y-m-d H:i:s', time());
-
-            $sql = $this->wpdb->prepare(
-                "UPDATE {$this->ForfaitTable} 
-                SET total_time = (SEC_TO_TIME(%d)),
-                    updated_at = %s
-                WHERE id = %d",
-                $remainingTime,
-                $updatedAt,
-                $id
-            );
-            $this->wpdb->query($sql);
-        }
-    }
-
     /*
      * Settings Actions
      */
-    public function addSettingProvider($datas): void
+    public function addProvider($datas): void
     {
         if (!empty($datas)) {
             $provider = $this->ValidateDatas($datas);
@@ -405,6 +339,20 @@ class DBActions
             );
             $this->wpdb->query($sql);
             $_SESSION['create_success'] = "Prestataire Ajouté !";
+        }
+    }
+
+    /*
+     * Format Actions
+     */
+    private function checkTimeFormat($time): bool|string
+    {
+        // Validation de la valeur soumise
+        if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+            // Transformation en nombre de secondes
+            return $result['result'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
+        } else {
+            return false;
         }
     }
 
