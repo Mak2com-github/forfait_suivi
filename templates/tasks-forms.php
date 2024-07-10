@@ -24,12 +24,13 @@
             </div>
             <div class="forms-container-fields">
                 <label id="taskTimeLabel" for="task_time">Durée <span>MAX: <?= $forfaitTotalTime ?></span></label>
-                <input name="task_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
+                <input id="task_time" name="task_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
             </div>
             <div class="forms-container-fields">
-                <label for="description">Description</label>
-                <textarea name="description" placeholder="Description de la tâche" rows="5" required></textarea>
+                <label for="task_description">Description</label>
+                <textarea id="task_description" name="description" placeholder="Description de la tâche" rows="5" required></textarea>
             </div>
+            <?php wp_nonce_field('save_task_action', 'save_task_nonce'); ?>
             <input id="addTaskSubmit" class="custom-plugin-submit" type="submit" name="save_task" value="Ajouter">
         </form>
     </div>

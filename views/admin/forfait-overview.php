@@ -1,5 +1,5 @@
 <?php
-require_once('inc/class-db-actions.php');
+require_once plugin_dir_path(__FILE__) . '../../includes/class-db-actions.php';
 
 function forfait_overview(): void
 {
@@ -106,6 +106,7 @@ function forfait_overview(): void
                                         <button id="updateForfaitTimeBtn" class="update-btn">Ajouter du temps</button>
                                     </div>
                                     <form class="delete-btn-container" action="" method="POST">
+                                        <?php wp_nonce_field('delete_forfait_action', 'delete_forfait_nonce'); ?>
                                         <input type="hidden" name="id" value="<?= $forfait[0]->id ?>">
                                         <input id="deleteBtn" title="Attention !" class="delete-btn" type="submit" name="delete_forfait" value="Supprimer">
                                     </form>
@@ -191,6 +192,7 @@ function forfait_overview(): void
                                     <th><?= $DBAction->getTaskCreatedAt($task->id) ?></th>
                                     <th>
                                         <form class="delete-btn-container" action="" method="POST">
+                                            <?php wp_nonce_field('delete_task_action', 'delete_task_nonce'); ?>
                                             <input type="hidden" name="id" value="<?= $task->id ?>">
                                             <input type="hidden" name="forfait_id" value="<?= $task->forfait_id ?>">
                                             <input type="hidden" name="time" value="<?= $task->task_time ?>">
@@ -242,6 +244,7 @@ function forfait_overview(): void
                     <label for="description">Description</label>
                     <textarea name="description" placeholder="Description du forfait" rows="5" required></textarea>
                 </div>
+                <?php wp_nonce_field('save_forfait_action', 'save_forfait_nonce'); ?>
                 <input class="custom-plugin-submit" type="submit" name="save_forfait" value="Ajouter">
             </form>
         </div>

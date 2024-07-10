@@ -1,14 +1,17 @@
 function selectForfaitTimeCheck(value)
 {
-    if(value){
-        var inputTime = document.getElementById("taskTimeInput")
+    if (value) {
+        var inputTime = document.getElementById("task_time")
         var labelTime = document.getElementById("taskTimeLabel")
         var submitTask = document.getElementById("addTaskSubmit")
-        if (inputTime.hasAttribute('max')) {
-            inputTime.removeAttribute('max')
-            labelTime.textContent = "Durée";
+
+        if (inputTime) {
+            if (inputTime.hasAttribute('max')) {
+                inputTime.removeAttribute('max')
+                labelTime.textContent = "Durée";
+            }
+            inputTime.setAttribute("max", value)
         }
-        inputTime.setAttribute("max", value)
 
         labelTime.textContent += " (Max "+value+")"
 
