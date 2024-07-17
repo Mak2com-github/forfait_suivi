@@ -139,9 +139,57 @@ function alertDeleteConfirm() {
     }
 }
 
+function formatTimeInput() {
+    const taskTimeInput = document.getElementById('task_time');
+
+    if (taskTimeInput) {
+        taskTimeInput.addEventListener('input', (event) => {
+            let value = event.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 6) {
+                value = value.slice(0, 6);
+            }
+            if (value.length > 4) {
+                value = value.slice(0, 2) + ':' + value.slice(2, 4) + ':' + value.slice(4);
+            } else if (value.length > 2) {
+                value = value.slice(0, 2) + ':' + value.slice(2);
+            }
+            event.target.value = value;
+        });
+    }
+}
+
+function setupEditTaskButtons() {
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const editTaskForm = document.getElementById('editTaskForm');
+    const addTaskForm = document.getElementById('addTaskForm');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const taskId = button.getAttribute('data-task-id');
+            const taskTime = button.getAttribute('data-task-time');
+            const taskDescription = button.getAttribute('data-task-description');
+
+            document.getElementById('edit_task_id').value = taskId;
+            document.getElementById('edit_task_time').value = taskTime;
+            document.getElementById('edit_task_description').value = taskDescription;
+
+            editTaskForm.style.display = 'block';
+            addTaskForm.style.display = 'none';
+        });
+    });
+
+    const closeTaskFormBtn = editTaskForm.querySelector(".closeFormButton");
+    closeTaskFormBtn.addEventListener("click", function() {
+        editTaskForm.style.display = 'none';
+    });
+}
+
 jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
-    jQuery('#wysiwygArea').wpEditor();
+    formatTimeInput()
+    setupEditTaskButtons()
 })

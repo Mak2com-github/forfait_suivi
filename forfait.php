@@ -100,7 +100,12 @@ function fs_dbOperatorFunctions(): void
         check_admin_referer('delete_task_action', 'delete_task_nonce');
         $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
     }
+    if (isset($_POST['edit_task'])) {
+        check_admin_referer('edit_task_action', 'edit_task_nonce');
+        $DBAction->updateTask($_POST['task_id'], $_POST['description'], $_POST['task_time']);
+    }
 }
 
+add_action('admin_post_edit_task', 'handle_edit_task');
 add_action('admin_enqueue_scripts', 'fs_admin_js_css');
 add_action('wp_dashboard_setup', 'fs_custom_dashboard_widgets');

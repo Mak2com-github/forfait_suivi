@@ -57,3 +57,23 @@ function fs_custom_dashboard_help(): void
         echo '</tbody>';
         echo '</table>';
 }
+
+function handle_edit_task() {
+    if (isset($_POST['edit_task'])) {
+        check_admin_referer('edit_task_action', 'edit_task_nonce');
+
+        $task_id = intval($_POST['task_id']);
+        $description = sanitize_text_field($_POST['description']);
+        $time = sanitize_text_field($_POST['task_time']);
+
+        $db_actions = new DBActions();
+        $result = $db_actions->updateTask($task_id, $description, $time);
+
+        if ($result) {
+            echo '<div class="notice notice-success is-dismissible"><p>Tâche mise à jour avec succès.</p></div>';
+        } else {
+            echo '<div class="notice notice-error is-dismissible"><p>Erreur lors de la mise à jour de la tâche.</p></div>';
+        }
+    }
+}
+add_action('admin_post_edit_task', 'handle_edit_task');

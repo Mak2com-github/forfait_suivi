@@ -222,6 +222,59 @@ class DBActions
         }
     }
 
+    public function updateTask($task_id, $description, $time) {
+        $task_id = intval($task_id);
+        $description = sanitize_text_field($description);
+        $time = sanitize_text_field($time);
+
+        $current_task = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->TasksTable} WHERE id = %d", $task_id));
+        $current_time_seconds = $this->TimeToSec($current_task->task_time);
+        $new_time_seconds = $this->TimeToSec($time);
+        $time_difference = $new_time_seconds - $current_time_seconds;
+
+        $updated = $this->wpdb->update(
+            $this->TasksTable,
+            array(
+                'description' => $description,
+                'task_time' => $time,
+                'updated_at' => current_time('mysql', 1)
+            ),
+            array('id' => $task_id),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            ),
+            array('%d')
+        );
+
+        if ($updated !== false) {
+            $this->updatePackageTime($current_task->forfait_id, $time_difference);
+        }
+
+        return $updated !== false;
+    }
+
+    private function updatePackageTime($forfait_id, $time_difference) {
+        $forfait = $this->wpdb->get_row($this->wpdb->prepare("SELECT total_time FROM {$this->ForfaitTable} WHERE id = %d", $forfait_id));
+        $forfait_time_seconds = $this->TimeToSec($forfait->total_time);
+        $new_forfait_time_seconds = $forfait_time_seconds - $time_difference;
+        $new_forfait_time = $this->SecToTime($new_forfait_time_seconds);
+
+        $this->wpdb->update(
+            $this->ForfaitTable,
+            array('total_time' => $new_forfait_time, 'updated_at' => current_time('mysql', 1)),
+            array('id' => $forfait_id),
+            array('%s', '%s'),
+            array('%d')
+        );
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
+        } else {
+            $_SESSION['delete_success'] = "Tâche Supprimé !";
+        }
+    }
+
     /*
      * GET NUMBER OF TASKS BY FORFAITS
      */

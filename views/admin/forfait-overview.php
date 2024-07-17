@@ -152,8 +152,8 @@ function forfait_overview(): void
                 </div>
 
                 <?php
-                include "templates/forfait-forms.php";
-                include "templates/tasks-forms.php";
+                require_once plugin_dir_path(__FILE__) . "../../templates/forfait-forms.php";
+                require_once plugin_dir_path(__FILE__) . "../../templates/tasks-forms.php";
                 ?>
 
                 <div class="tasks-listing">
@@ -198,6 +198,7 @@ function forfait_overview(): void
                                             <input type="hidden" name="time" value="<?= $task->task_time ?>">
                                             <input class="delete-btn" type="submit" name="delete_task" value="Supprimer">
                                         </form>
+                                        <button class="edit-btn" data-task-id="<?= $task->id ?>" data-task-time="<?= $task->task_time ?>" data-task-description="<?= $task->description ?>">Modifier</button>
                                     </th>
                                 </tr>
                             <?php
