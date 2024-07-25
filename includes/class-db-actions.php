@@ -11,16 +11,33 @@ class DBActions
         $this->ForfaitTable = $this->wpdb->prefix . "forfait";
         $this->TasksTable = $this->wpdb->prefix . "tasks";
     }
+
+    /**
+     * Handles any error that occurred during a database operation.
+     *
+     * @param mixed $error The error that occurred.
+     * @return string|null A string error message if an error occurred, or null if no error occurred.
+     */
+    private function handleError($error): ?string
+    {
+        if ($this->wpdb->last_error) {
+            error_log("Error: " . $this->wpdb->last_error);
+            error_log("Query: " . $this->wpdb->last_query);
+            return "Une erreur s'est produite. Veuillez réessayer.";
+        }
+        return null;
+    }
+
     /*
      * CREATE A FORFAIT
      */
     public function createForfait($datas): void
     {
         if (!empty($datas)) {
-            $forfait = $this->ValidateDatas($datas);
+            $forfait = $this->validateDatas($datas);
             $sql = $this->wpdb->prepare(
                 "INSERT INTO {$this->ForfaitTable}
-                        (title, total_time, description, created_at, updated_at) VALUES (%s,(SEC_TO_TIME(%d)),%s,%s,%s)",
+                (title, total_time, description, created_at, updated_at) VALUES (%s, (SEC_TO_TIME(%d)), %s, %s, %s)",
                 $forfait['title'],
                 $forfait['total_time'],
                 $forfait['description'],
@@ -28,7 +45,11 @@ class DBActions
                 $forfait['updated_at']
             );
             $this->wpdb->query($sql);
-            $_SESSION['create_success'] = "Forfait Ajouté !";
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['create_success'] = "Forfait Ajouté !";
+            }
         }
     }
 
@@ -38,15 +59,12 @@ class DBActions
     public function deleteForfait($id): void
     {
         $id = strip_tags($id);
-
-        $this->wpdb->delete($this->TasksTable, array('forfait_id' => $id));
-        $this->wpdb->delete($this->ForfaitTable, array('id' => $id));
-
-        if ( $this->wpdb->last_error ) {
-            echo "Error: " . $this->wpdb->last_error . "<br>";
-            echo "Query: " . $this->wpdb->last_query . "<br>";
+        $this->wpdb->delete($this->TasksTable, ['forfait_id' => $id]);
+        $this->wpdb->delete($this->ForfaitTable, ['id' => $id]);
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
         } else {
-            $_SESSION['delete_success'] = "Forfait Supprimé ! ";
+            $_SESSION['delete_success'] = "Forfait Supprimé !";
         }
     }
 
@@ -58,7 +76,6 @@ class DBActions
         if (!empty($datas)) {
             $forfait = $this->ValidateDatas($datas);
             if (empty($_SESSION['errors'])) {
-
                 $sql = $this->wpdb->prepare(
                     "UPDATE {$this->ForfaitTable} 
                             SET title = %s,
@@ -71,7 +88,11 @@ class DBActions
                     $forfait['id']
                 );
                 $this->wpdb->query($sql);
-                $_SESSION['create_success'] = "Forfait mis à jour !";
+                if ($error = $this->handleError($this->wpdb->last_error)) {
+                    $_SESSION['errors'] = $error;
+                } else {
+                    $_SESSION['update_success'] = "Forfait mis à jour !";
+                }
             }
         }
     }
@@ -105,12 +126,11 @@ class DBActions
                 );
                 $this->wpdb->query($sql);
 
-                if ($this->wpdb->last_error) {
-                    echo "Error: " . $this->wpdb->last_error . "<br>";
-                    echo "Query: " . $this->wpdb->last_query . "<br>";
+                if ($error = $this->handleError($this->wpdb->last_error)) {
+                    $_SESSION['errors'] = $error;
                 } else {
                     $this->deactivateTasks($forfait['id']);
-                    $_SESSION['create_success'] = "Temps du forfait mis à jour !";
+                    $_SESSION['update_success'] = "Temps du forfait mis à jour !";
                 }
             }
         }
@@ -140,7 +160,11 @@ class DBActions
                     $task['updated_at']
                 );
                 $this->wpdb->query($sql);
-                $_SESSION['create_success'] = "Tâche Ajoutée !";
+                if ($error = $this->handleError($this->wpdb->last_error)) {
+                    $_SESSION['errors'] = $error;
+                } else {
+                    $_SESSION['create_success'] = "Tâche Ajoutée !";
+                }
             }
         }
     }
@@ -158,11 +182,10 @@ class DBActions
 
         $this->wpdb->delete($this->TasksTable, array('id' => $id));
 
-        if ($this->wpdb->last_error) {
-            echo "Error: " . $this->wpdb->last_error . "<br>";
-            echo "Query: " . $this->wpdb->last_query . "<br>";
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
         } else {
-            $_SESSION['delete_success'] = "Tâche Supprimé ! ";
+            $_SESSION['delete_success'] = "Tâche Supprimé !";
         }
     }
 
@@ -191,10 +214,64 @@ class DBActions
 
             $this->wpdb->query($sql);
 
-            if ($this->wpdb->last_error) {
-                echo "Error: " . $this->wpdb->last_error . "<br>";
-                echo "Query: " . $this->wpdb->last_query . "<br>";
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['deactivate_success'] = "Tâche désactivée !";
             }
+        }
+    }
+
+    public function updateTask($task_id, $description, $time) {
+        $task_id = intval($task_id);
+        $description = sanitize_text_field($description);
+        $time = sanitize_text_field($time);
+
+        $current_task = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->TasksTable} WHERE id = %d", $task_id));
+        $current_time_seconds = $this->TimeToSec($current_task->task_time);
+        $new_time_seconds = $this->TimeToSec($time);
+        $time_difference = $new_time_seconds - $current_time_seconds;
+
+        $updated = $this->wpdb->update(
+            $this->TasksTable,
+            array(
+                'description' => $description,
+                'task_time' => $time,
+                'updated_at' => current_time('mysql', 1)
+            ),
+            array('id' => $task_id),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            ),
+            array('%d')
+        );
+
+        if ($updated !== false) {
+            $this->updatePackageTime($current_task->forfait_id, $time_difference);
+        }
+
+        return $updated !== false;
+    }
+
+    private function updatePackageTime($forfait_id, $time_difference) {
+        $forfait = $this->wpdb->get_row($this->wpdb->prepare("SELECT total_time FROM {$this->ForfaitTable} WHERE id = %d", $forfait_id));
+        $forfait_time_seconds = $this->TimeToSec($forfait->total_time);
+        $new_forfait_time_seconds = $forfait_time_seconds - $time_difference;
+        $new_forfait_time = $this->SecToTime($new_forfait_time_seconds);
+
+        $this->wpdb->update(
+            $this->ForfaitTable,
+            array('total_time' => $new_forfait_time, 'updated_at' => current_time('mysql', 1)),
+            array('id' => $forfait_id),
+            array('%s', '%s'),
+            array('%d')
+        );
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
+        } else {
+            $_SESSION['delete_success'] = "Tâche Supprimé !";
         }
     }
 
@@ -203,13 +280,10 @@ class DBActions
      */
     public function getTasksNumberByForfait($forfait_id): ?string
     {
-        $table_forfait = $this->wpdb->prefix.'forfait';
-        $table_tasks = $this->wpdb->prefix.'tasks';
+        $table_tasks = $this->wpdb->prefix . 'tasks';
 
-        $sql = "SELECT count(*) FROM $table_tasks as tblTasks JOIN $table_forfait as tblForfait WHERE tblTasks.forfait_id=$forfait_id AND tblTasks.usable=1 AND tblForfait.id=$forfait_id";
-        $forfaitCount = $this->wpdb->get_var($sql);
-
-        return $forfaitCount;
+        $sql = $this->wpdb->prepare("SELECT COUNT(*) FROM $table_tasks WHERE forfait_id = %d AND usable = 1", $forfait_id);
+        return $this->wpdb->get_var($sql);
     }
 
     /*
@@ -345,6 +419,11 @@ class DBActions
             $id
         );
         $this->wpdb->query($sql);
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
+        } else {
+            $_SESSION['update_success'] = "Temps mis à jour !";
+        }
     }
 
     private function decrementForfaitTime($id, $time): void
@@ -369,6 +448,11 @@ class DBActions
                 $id
             );
             $this->wpdb->query($sql);
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['update_success'] = "Temps mis à jour !";
+            }
         }
     }
 
@@ -398,8 +482,11 @@ class DBActions
         }
     }
 
-    private function ValidateDatas($datas): array
+    private function validateDatas($datas): array
     {
+        $errors = [];
+        $result = [];
+
         // Title
         if (isset($datas['title'])) {
             if (empty($datas['title'])) {
@@ -408,6 +495,7 @@ class DBActions
                 $result['title'] = htmlspecialchars($datas['title'], ENT_QUOTES);
             }
         }
+
         // Total Time
         if (isset($datas['total_time'])) {
             if (empty($datas['total_time'])) {
@@ -415,24 +503,25 @@ class DBActions
             } else {
                 $result['total_time'] = strip_tags($datas['total_time']);
                 // Validation de la valeur soumise
-                $result['total_time'] = self::checkTimeFormat($result['total_time']);
-                if ($result['total_time'] === false) {
+                if (($result['total_time'] = $this->checkTimeFormat($result['total_time'])) === false) {
                     $errors['total_time'] = 'Le temps total n\'est pas au bon format';
                 }
             }
         }
+
+        // Task Time
         if (isset($datas['task_time'])) {
             if (empty($datas['task_time'])) {
                 $errors['task_time'] = 'Le temps de la tâche est vide';
             } else {
                 $result['task_time'] = strip_tags($datas['task_time']);
                 // Validation de la valeur soumise
-                $result['task_time'] = self::checkTimeFormat($result['task_time']);
-                if ($result['task_time'] === false) {
+                if (($result['task_time'] = $this->checkTimeFormat($result['task_time'])) === false) {
                     $errors['task_time'] = 'Le temps de la tâche n\'est pas au bon format';
                 }
             }
         }
+
         // Description
         if (isset($datas['description'])) {
             if (empty($datas['description'])) {
@@ -441,9 +530,13 @@ class DBActions
                 $result['description'] = htmlspecialchars($datas['description'], ENT_QUOTES);
             }
         }
+
+        // Forfait ID
         if (isset($datas['forfait_id'])) {
             $result['forfait_id'] = strip_tags($datas['forfait_id']);
         }
+
+        // ID
         if (isset($datas['id'])) {
             $result['id'] = strip_tags($datas['id']);
         }
@@ -453,8 +546,9 @@ class DBActions
         $result['updated_at'] = date('Y-m-d H:i:s', time());
 
         if (!empty($errors)) {
-            return $_SESSION['errors'] = $errors;
+            $_SESSION['errors'] = $errors;
         }
+
         return $result;
     }
 

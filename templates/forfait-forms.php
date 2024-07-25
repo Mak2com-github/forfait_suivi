@@ -19,6 +19,7 @@
                 <label for="description">Description</label>
                 <textarea name="description" id="wysiwygArea" placeholder="Description du forfait" rows="5" required><?php if (!empty($forfait[0]->description)) { echo $forfait[0]->description; } ?></textarea>
             </div>
+            <?php wp_nonce_field('update_forfait_action', 'update_forfait_nonce'); ?>
             <input class="custom-plugin-submit" type="submit" name="update_forfait" value="Modifier">
         </form>
     </div>
@@ -39,6 +40,7 @@
                 <label for="total_time">Temps Total <span>FORMAT: 00:00:00</span></label>
                 <input name="total_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
             </div>
+            <?php wp_nonce_field('update_forfait_time_action', 'update_forfait_time_nonce'); ?>
             <input class="custom-plugin-submit" type="submit" name="update_forfait_time" value="Modifier">
         </form>
     </div>

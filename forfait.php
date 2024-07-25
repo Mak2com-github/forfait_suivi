@@ -22,6 +22,12 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+define('ROOTDIR', plugin_dir_path(__FILE__));
+
+require_once plugin_dir_path(__FILE__) . 'includes/class-db-actions.php';
+require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
+require_once plugin_dir_path(__FILE__) . 'views/admin/forfait-overview.php';
+
 register_activation_hook(__FILE__, 'fs_create_db');
 function fs_create_db(): void
 {
@@ -65,89 +71,41 @@ function fs_create_db(): void
     }
 }
 
-/** INITIALISATION DU PLUGIN **/
-add_action('admin_menu','fs_init_plugin_menu');
-function fs_init_plugin_menu(): void
-{
-
-    add_menu_page(
-        'Forfait Suivi',
-        'Forfait Suivi',
-        'manage_options',
-        'forfait_suivi',
-        'forfait_overview',
-        'dashicons-calendar-alt',
-        3
-    );
-}
-
 add_action('admin_init', 'fs_dbOperatorFunctions');
 function fs_dbOperatorFunctions(): void
 {
     $DBAction = new DBActions();
 
     if (isset($_POST['save_forfait'])) {
+        check_admin_referer('save_forfait_action', 'save_forfait_nonce');
         $DBAction->createForfait($_POST);
     }
     if (isset($_POST['update_forfait'])) {
+        check_admin_referer('update_forfait_action', 'update_forfait_nonce');
         $DBAction->updateForfait($_POST);
     }
     if (isset($_POST['update_forfait_time'])) {
+        check_admin_referer('update_forfait_time_action', 'update_forfait_time_nonce');
         $DBAction->updateForfaitTime($_POST);
     }
     if (isset($_POST['delete_forfait'])) {
+        check_admin_referer('delete_forfait_action', 'delete_forfait_nonce');
         $DBAction->deleteForfait($_POST['id']);
     }
     if (isset($_POST['save_task'])) {
+        check_admin_referer('save_task_action', 'save_task_nonce');
         $DBAction->createTask($_POST);
     }
     if (isset($_POST['delete_task'])) {
+        check_admin_referer('delete_task_action', 'delete_task_nonce');
         $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
+    }
+    if (isset($_POST['edit_task'])) {
+        check_admin_referer('edit_task_action', 'edit_task_nonce');
+        $DBAction->updateTask($_POST['task_id'], $_POST['description'], $_POST['task_time']);
     }
 }
 
-define('ROOTDIR', plugin_dir_path(__FILE__));
-require_once(ROOTDIR . 'forfait-overview.php');
-
-/** ACTIVATION CSS / JS / BOOTSTRAP **/
-add_action('admin_init', 'fs_admin_js_css');
-function fs_admin_js_css(): void
-{
-    wp_enqueue_script('font-awesome', 'https://kit.fontawesome.com/5397c1f880.js', null, null, true);
-    wp_register_style('Forfait_css', plugins_url('css/admin.css', __FILE__));
-    wp_enqueue_style('Forfait_css');
-    wp_enqueue_script('Forfait_js', plugins_url('js/main.js', __FILE__), array('jquery'),'1.0',true);
-    wp_enqueue_script('jQuery-Ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', null, null, true);
-}
-
+add_action('admin_post_edit_task', 'handle_edit_task');
+add_action('admin_enqueue_scripts', 'fs_admin_js_css');
 add_action('wp_dashboard_setup', 'fs_custom_dashboard_widgets');
-function fs_custom_dashboard_widgets(): void
-{
-    global $wp_meta_boxes;
-    wp_add_dashboard_widget('custom_help_widget', 'Forfait Suivi', 'fs_custom_dashboard_help');
-}
-
-function fs_custom_dashboard_help(): void
-{
-    echo '<p>Prévisualisation des forfaits de suivi : </p>';
-    $DBAction = new DBActions();
-    $forfaits = $DBAction->getListForfaits();
-
-    echo '<table class="custom-table-widget">';
-        echo '<thead>';
-            echo '<tr>';
-                echo '<th class="custom-col">Temps Restant</th>';
-                echo '<th class="custom-col">Tâches Attribuées</th>';
-            echo '</tr>';
-        echo '</thead>';
-        echo '<tbody>';
-            foreach ($forfaits as $forfait) :
-                $forfaitTotalTime = $DBAction->getForfaitTime($forfait->id);
-            echo '<tr class="overview-tasks">';
-                echo '<th>'.$forfaitTotalTime.'</th>';
-                echo '<th>'.$DBAction->getTasksNumberByForfait($forfait->id).'</th>';
-            echo '</tr>';
-            endforeach;
-        echo '</tbody>';
-    echo '</table>';
-}
