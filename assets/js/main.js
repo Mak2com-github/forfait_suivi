@@ -35,66 +35,66 @@ function toggleForms() {
 
     if (updateForfaitForm) {
         updateForfaitBtn.addEventListener('click', function() {
-            if (updateForfaitForm.classList.contains('displayBlock')) {
-                updateForfaitForm.classList.remove('displayBlock')
+            if (updateForfaitForm.classList.contains('translateY0')) {
+                updateForfaitForm.classList.remove('translateY0')
             } else {
-                updateForfaitForm.classList.add('displayBlock')
+                updateForfaitForm.classList.add('translateY0')
             }
-            if (updateForfaitTimeBtn.classList.contains('displayBlock')) {
-                updateForfaitTimeBtn.classList.remove('displayBlock')
+            if (updateForfaitTimeBtn.classList.contains('translateY0')) {
+                updateForfaitTimeBtn.classList.remove('translateY0')
             }
-            if (addTaskForm.classList.contains('displayBlock')) {
-                addTaskForm.classList.remove('displayBlock')
+            if (addTaskForm.classList.contains('translateY0')) {
+                addTaskForm.classList.remove('translateY0')
             }
         })
         var closeForfaitBtn = updateForfaitForm.querySelector(".closeFormButton")
         closeForfaitBtn.addEventListener("click", function() {
-            if (updateForfaitForm.classList.contains('displayBlock')) {
-                updateForfaitForm.classList.remove('displayBlock')
+            if (updateForfaitForm.classList.contains('translateY0')) {
+                updateForfaitForm.classList.remove('translateY0')
             }
         })
     }
 
     if (updateForfaitTimeForm) {
         updateForfaitTimeBtn.addEventListener('click', function() {
-            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-                updateForfaitTimeForm.classList.remove('displayBlock')
+            if (updateForfaitTimeForm.classList.contains('translateY0')) {
+                updateForfaitTimeForm.classList.remove('translateY0')
             } else {
-                updateForfaitTimeForm.classList.add('displayBlock')
+                updateForfaitTimeForm.classList.add('translateY0')
             }
-            if (updateForfaitForm.classList.contains('displayBlock')) {
-                updateForfaitForm.classList.remove('displayBlock')
+            if (updateForfaitForm.classList.contains('translateY0')) {
+                updateForfaitForm.classList.remove('translateY0')
             }
-            if (addTaskForm.classList.contains('displayBlock')) {
-                addTaskForm.classList.remove('displayBlock')
+            if (addTaskForm.classList.contains('translateY0')) {
+                addTaskForm.classList.remove('translateY0')
             }
         })
         var closeForfaitTimeBtn = updateForfaitTimeForm.querySelector(".closeFormButton")
         closeForfaitTimeBtn.addEventListener("click", function() {
-            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-                updateForfaitTimeForm.classList.remove('displayBlock')
+            if (updateForfaitTimeForm.classList.contains('translateY0')) {
+                updateForfaitTimeForm.classList.remove('translateY0')
             }
         })
     }
 
     if (addTaskForm) {
         addTaskBtn.addEventListener('click', function() {
-            if (addTaskForm.classList.contains('displayBlock')) {
-                addTaskForm.classList.remove('displayBlock')
+            if (addTaskForm.classList.contains('translateY0')) {
+                addTaskForm.classList.remove('translateY0')
             } else {
-                addTaskForm.classList.add('displayBlock')
+                addTaskForm.classList.add('translateY0')
             }
-            if (updateForfaitForm.classList.contains('displayBlock')) {
-                updateForfaitForm.classList.remove('displayBlock')
+            if (updateForfaitForm.classList.contains('translateY0')) {
+                updateForfaitForm.classList.remove('translateY0')
             }
-            if (updateForfaitTimeForm.classList.contains('displayBlock')) {
-                updateForfaitTimeForm.classList.remove('displayBlock')
+            if (updateForfaitTimeForm.classList.contains('translateY0')) {
+                updateForfaitTimeForm.classList.remove('translateY0')
             }
         })
         var closeTaskFormBtn = addTaskForm.querySelector(".closeFormButton")
         closeTaskFormBtn.addEventListener("click", function() {
-            if (addTaskForm.classList.contains('displayBlock')) {
-                addTaskForm.classList.remove('displayBlock')
+            if (addTaskForm.classList.contains('translateY0')) {
+                addTaskForm.classList.remove('translateY0')
             }
         })
     }
@@ -140,10 +140,24 @@ function alertDeleteConfirm() {
 }
 
 function formatTimeInput() {
-    const taskTimeInput = document.getElementById('task_time');
-
+    const taskTimeInput = document.querySelector('input[name="task_time"]');
+    const forfaitTimeInput = document.querySelector('input[name="total_time"]');
     if (taskTimeInput) {
         taskTimeInput.addEventListener('input', (event) => {
+            let value = event.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 6) {
+                value = value.slice(0, 6);
+            }
+            if (value.length > 4) {
+                value = value.slice(0, 2) + ':' + value.slice(2, 4) + ':' + value.slice(4);
+            } else if (value.length > 2) {
+                value = value.slice(0, 2) + ':' + value.slice(2);
+            }
+            event.target.value = value;
+        });
+    }
+    if (forfaitTimeInput) {
+        forfaitTimeInput.addEventListener('input', (event) => {
             let value = event.target.value.replace(/[^0-9]/g, '');
             if (value.length > 6) {
                 value = value.slice(0, 6);

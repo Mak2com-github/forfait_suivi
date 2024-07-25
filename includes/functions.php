@@ -35,7 +35,7 @@ function fs_custom_dashboard_widgets(): void
 
 function fs_custom_dashboard_help(): void
 {
-    echo '<p>Prévisualisation des forfaits de suivi : </p>';
+    echo '<p>Prévisualisation des forfaits de suivi</p>';
     $DBAction = new DBActions();
     $forfaits = $DBAction->getListForfaits();
 

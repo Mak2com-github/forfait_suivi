@@ -19,9 +19,9 @@ function forfait_overview(): void
             <p id="updateAlertMessage" class="alert-message">Attention ! La modification du forfait aura pour effet de détacher les tâches de ce forfait </br> Elles seront toujours présentes mais ne seront plus comptabilisées sur ce forfait.</p>
             <?php
             if (isset($_SESSION['create_success'])) :
-                echo '<div class="session-msg session-success"><p>'.$_SESSION['create_success'].'<i class="fas fa-smile"></i></p></div>';
+                echo '<div class="session-msg session-success"><p><i class="fas fa-smile"></i>'.$_SESSION['create_success'].'<i class="fas fa-smile"></i></p></div>';
             elseif (isset($_SESSION['delete_success'])) :
-                echo '<div class="session-msg session-success"><p>'.$_SESSION['delete_success'].'<i class="fas fa-smile"></i></p></div>';
+                echo '<div class="session-msg session-success"><p><i class="fas fa-smile"></i>'.$_SESSION['delete_success'].'<i class="fas fa-smile"></i></p></div>';
             elseif (isset($_SESSION['errors'])) :
                 echo '<div class="session-msg session-alert">';
                 foreach ($_SESSION['errors'] as $error) :
@@ -33,7 +33,10 @@ function forfait_overview(): void
         </div>
         <div class="overview-head">
             <div class="status-legend-main">
-                <h3>Status</h3>
+                <button id="infosBtn" class="toggle-infos" title="Afficher les informations">
+                    <img src="<?= plugins_url('../assets/img/infos.svg', dirname(__FILE__)); ?>" alt="Afficher les informations">
+                </button>
+                <h2>Status</h2>
                 <div class="status-legend-block">
                     <div class="usable-false"></div>
                     <p>Tâche débitée sur un ancien forfait</p>
@@ -43,11 +46,20 @@ function forfait_overview(): void
                     <p>Tâche débitée sur le forfait en cours</p>
                 </div>
             </div>
-            <div class="head-title">
-                <h2>Gestion du forfait suivi des interventions</h2>
-                <p>Cette page permet de suivre les interventions techniques effectuées sur </p>
-                <p class="post-scriptum">Ici vous pouvez ajouter ou supprimer une tâche, et consulter les informations, modifier ou supprimer le forfait</p>
-            </div>
+            <?php
+            if (!empty($forfait)) :
+                ?>
+                <div class="selected-forfait">
+                    <?php
+                    $title = htmlspecialchars_decode($forfait[0]->title, ENT_QUOTES);
+                    $description = htmlspecialchars_decode($forfait[0]->description, ENT_QUOTES);
+                    ?>
+                    <div class="selected-forfait-head">
+                        <h1><?= stripslashes($title) ?></h1>
+                        <p class="forfait-description"><?= stripslashes($description) ?></p>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div>
@@ -67,57 +79,65 @@ function forfait_overview(): void
                                 <p>Temps Restant : <?= $remainingTime ?></p>
                             </div>
                         <?php endif;
-
                         $title = htmlspecialchars_decode($forfait[0]->title, ENT_QUOTES);
                         $description = htmlspecialchars_decode($forfait[0]->description, ENT_QUOTES);
                         ?>
-                        <h3><?= stripslashes($title) ?></h3>
-                        <p class="forfait-description"><?= stripslashes($description) ?></p>
-                        <table class="selected-forfait-table">
-                            <tr>
-                                <th>Nombres de tâches attribuées: </th>
-                                <td><?= $DBAction->getTasksNumberByForfait($forfait[0]->id) ?></td>
-                            </tr>
+                        <div class="selected-forfait-head">
+                            <h2>Détails</h2>
+                        </div>
+                        <div class="selected-forfait-table">
+                            <div class="selected-forfait-table-row">
+                                <h3>Nombres de tâches attribuées: </h3>
+                                <p><?= $DBAction->getTasksNumberByForfait($forfait[0]->id) ?></p>
+                            </div>
                             <?php if (isset($tasksTotalTime)) : ?>
-                            <tr>
-                                <th>Total temps des tâches :</th>
-                                <td><?= $tasksTotalTime ?></td>
-                            </tr>
+                            <div class="selected-forfait-table-row">
+                                <h3>Total temps des tâches :</h3>
+                                <p><?= $tasksTotalTime ?></p>
+                            </div>
                             <?php endif; ?>
-                            <tr>
-                                <th>Temps Restant:</th>
-                                <td><?= $remainingTime ?></td>
-                            </tr>
-                            <tr>
-                                <th>Crée le: </th>
-                                <td><?= $DBAction->getForfaitCreatedAt($forfait[0]->id) ?></td>
-                            </tr>
-                            <tr>
-                                <th>Rechargé le: </th>
-                                <td><?= $DBAction->getForfaitUpdatedAt($forfait[0]->id) ?></td>
-                            </tr>
-                            <tr>
-                                <th>Actions</th>
-                                <td>
-                                    <div class="update-btn-container">
-                                        <button id="updateForfaitBtn" class="update-btn">Modifier</button>
+                            <div class="selected-forfait-table-row">
+                                <h3>Temps Restant:</h3>
+                                <p><?= $remainingTime ?></p>
+                            </div>
+                            <div class="selected-forfait-table-row">
+                                <h3>Crée le: </h3>
+                                <p><?= $DBAction->getForfaitCreatedAt($forfait[0]->id) ?></p>
+                            </div>
+                            <div class="selected-forfait-table-row">
+                                <h3>Rechargé le: </h3>
+                                <p><?= $DBAction->getForfaitUpdatedAt($forfait[0]->id) ?></p>
+                            </div>
+                            <div class="selected-forfait-table-row forfait-row-actions">
+                                <h3>Actions</h3>
+                                <div class="forfait-actions">
+                                    <div class="action-btn-container">
+                                        <button id="updateForfaitBtn" class="update-btn" title="Modifier le forfait">
+                                            <img src="<?= plugins_url('../assets/img/update.svg', dirname(__FILE__)); ?>" alt="Modifier">
+                                        </button>
                                     </div>
-                                    <div class="update-btn-container">
-                                        <button id="updateForfaitTimeBtn" class="update-btn">Ajouter du temps</button>
+                                    <div class="action-btn-container">
+                                        <button id="updateForfaitTimeBtn" class="add-time-btn" title="Ajouter du temps">
+                                            <img src="<?= plugins_url('../assets/img/add-time.svg', dirname(__FILE__)); ?>" alt="Ajouter du temps">
+                                        </button>
                                     </div>
-                                    <form class="delete-btn-container" action="" method="POST">
+                                    <form class="action-btn-container" action="" method="POST">
                                         <?php wp_nonce_field('delete_forfait_action', 'delete_forfait_nonce'); ?>
                                         <input type="hidden" name="id" value="<?= $forfait[0]->id ?>">
-                                        <input id="deleteBtn" title="Attention !" class="delete-btn" type="submit" name="delete_forfait" value="Supprimer">
+                                        <button id="deleteBtn" title="Supprimer le forfait" class="delete-btn" type="submit" name="delete_forfait">
+                                            <img src="<?= plugins_url('../assets/img/trash.svg', dirname(__FILE__)); ?>" alt="Supprimer">
+                                        </button>
                                     </form>
                                     <?php if (!empty($remainingTime) && $remainingTime > '00:00:00') : ?>
-                                        <div class="create-btn-container">
-                                            <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTaskBtn">Ajouter une Tâche</button>
+                                        <div class="action-btn-container">
+                                            <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTaskBtn" title="Ajouter une tâche">
+                                                <img src="<?= plugins_url('../assets/img/add-task.svg', dirname(__FILE__)); ?>" alt="Ajouter une tache">
+                                            </button>
                                         </div>
                                     <?php endif; ?>
-                                </td>
-                            </tr>
-                        </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                         <div class="forfait-instructions">
                             <h2>Instructions</h2>
@@ -151,27 +171,30 @@ function forfait_overview(): void
                         </div>
                 </div>
 
-                <?php
-                require_once plugin_dir_path(__FILE__) . "../../templates/forfait-forms.php";
-                require_once plugin_dir_path(__FILE__) . "../../templates/tasks-forms.php";
-                ?>
-
                 <div class="tasks-listing">
                     <h3>Liste des Tâches</h3>
                     <?php
                     if (isset($forfait) && !empty($forfait)) :
                     ?>
-                    <table class="custom-table-overview">
-                        <thead>
-                        <tr>
-                            <th class="custom-col">Status</th>
-                            <th class="custom-col">Description</th>
-                            <th class="custom-col">Durée de la tâche</th>
-                            <th class="custom-col">Date de création</th>
-                            <th class="custom-col">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <div class="task-table">
+                        <div class="task-table-head">
+                            <div class="task-table-head-col">
+                                <p class="custom-col">Status</p>
+                            </div>
+                            <div class="task-table-head-col">
+                                <p class="custom-col">Description</p>
+                            </div>
+                            <div class="task-table-head-col">
+                                <p class="custom-col">Durée de la tâche</p>
+                            </div>
+                            <div class="task-table-head-col">
+                                <p class="custom-col">Date de création</p>
+                            </div>
+                            <div class="task-table-head-col">
+                                <p class="custom-col">Action</p>
+                            </div>
+                        </div>
+                        <div class="task-table-body">
                         <?php
                         $tasks = $DBAction->getListTasks($forfait[0]->id);
                         if (!empty($tasks)) :
@@ -179,60 +202,73 @@ function forfait_overview(): void
                                 $task->description = stripslashes($task->description);
                                 $task->description = htmlspecialchars_decode($task->description, ENT_QUOTES);
                             ?>
-                                <tr class="overview-tasks <?= $task->forfait_id ?>">
-                                    <th scope="row">
+                                <div class="task-table-row <?= $task->forfait_id ?>">
+                                    <div class="task-table-row-col">
                                         <?php if ($task->usable === '0') : ?>
                                         <div class="usable-false"></div>
                                         <?php elseif ($task->usable === '1') : ?>
                                         <div class="usable-true"></div>
                                         <?php endif; ?>
-                                    </th>
-                                    <th><?= $task->description ?></th>
-                                    <th><?= $task->task_time ?></th>
-                                    <th><?= $DBAction->getTaskCreatedAt($task->id) ?></th>
-                                    <th>
+                                    </div>
+                                    <div class="task-table-row-col">
+                                        <p><?= $task->description ?></p>
+                                    </div>
+                                    <div class="task-table-row-col">
+                                        <p><?= $task->task_time ?></p>
+                                    </div>
+                                    <div class="task-table-row-col">
+                                        <p><?= $DBAction->getTaskCreatedAt($task->id) ?></p>
+                                    </div>
+                                    <div class="task-table-row-col">
                                         <form class="delete-btn-container" action="" method="POST">
                                             <?php wp_nonce_field('delete_task_action', 'delete_task_nonce'); ?>
                                             <input type="hidden" name="id" value="<?= $task->id ?>">
                                             <input type="hidden" name="forfait_id" value="<?= $task->forfait_id ?>">
                                             <input type="hidden" name="time" value="<?= $task->task_time ?>">
-                                            <input class="delete-btn" type="submit" name="delete_task" value="Supprimer">
+                                            <button title="Supprimer la tache" class="delete-btn" type="submit" name="delete_task">
+                                                <img src="<?= plugins_url('../assets/img/trash.svg', dirname(__FILE__)); ?>" alt="Supprimer">
+                                            </button>
                                         </form>
-                                        <button class="edit-btn" data-task-id="<?= $task->id ?>" data-task-time="<?= $task->task_time ?>" data-task-description="<?= $task->description ?>">Modifier</button>
-                                    </th>
-                                </tr>
+                                        <button class="update-btn edit-btn" title="Modifier le forfait" data-task-id="<?= $task->id ?>" data-task-time="<?= $task->task_time ?>" data-task-description="<?= $task->description ?>">
+                                            <img src="<?= plugins_url('../assets/img/update.svg', dirname(__FILE__)); ?>" alt="Modifier">
+                                        </button>
+                                    </div>
+                                </div>
                             <?php
                             endforeach;
                         else :
                         ?>
-                            <tr class="default-table-line">
-                                <th></th>
-                                <th>Aucune Tâche</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
+                            <div class="default-table-line">
+                                <div></div>
+                                <div><p>Aucune Tâche</p></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
                         <?php endif; ?>
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                     <?php else : ?>
                         <p>Aucun Forfait</p>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
-
     </div>
 
     <?php
+    require_once plugin_dir_path(__FILE__) . "../../templates/forfait-forms.php";
+    require_once plugin_dir_path(__FILE__) . "../../templates/tasks-forms.php";
+
     else :
         ?>
         <!-- Add Forfait Form -->
-        <div class="forms-container displayBlock" id="addForfaitForm">
+        <div class="forms-container translateY0" id="addForfaitForm">
             <div class="close-form">
                 <button class="closeFormButton">X</button>
             </div>
             <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                <h2>Ajouter un forfait</h2>
                 <div class="forms-container-fields">
                     <label for="title">Nom</label>
                     <input name="title" type="text" placeholder="Titre du forfait" required>
