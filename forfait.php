@@ -31,44 +31,36 @@ require_once plugin_dir_path(__FILE__) . 'views/admin/forfait-overview.php';
 register_activation_hook(__FILE__, 'fs_create_db');
 function fs_create_db(): void
 {
-
     global $wpdb;
-    global $forfait_db_version;
 
     $wpdb_collate = $wpdb->collate;
     $wbdb_charset = $wpdb->charset;
     $table_forfait = $wpdb->prefix.'forfait';
     $table_tasks = $wpdb->prefix.'tasks';
 
-    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_forfait'") != $table_forfait ) {
-        $sql_forfait =
-            "CREATE TABLE IF NOT EXISTS {$table_forfait} (
-            `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-            `title` varchar(250) NOT NULL,
-            `total_time` time NOT NULL,
-            `description` varchar(250) NOT NULL,
-            `created_at` datetime NULL,
-            `updated_at` datetime NULL 
-            ) ENGINE=InnoDB DEFAULT CHARSET `$wbdb_charset` COLLATE `$wpdb_collate`";
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta( $sql_forfait );
-    }
+    $sql_forfait = "CREATE TABLE IF NOT EXISTS {$table_forfait} (
+        `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+        `title` varchar(250) NOT NULL,
+        `total_time` time NOT NULL,
+        `description` varchar(250) NOT NULL,
+        `created_at` datetime NULL,
+        `updated_at` datetime NULL 
+    ) ENGINE=InnoDB DEFAULT CHARSET `$wbdb_charset` COLLATE `$wpdb_collate`";
 
-    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_tasks'") != $table_tasks ) {
-        $sql_tasks =
-            "CREATE TABLE IF NOT EXISTS {$table_tasks} (
-            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            forfait_id BIGINT UNSIGNED NOT NULL,
-            task_time time NOT NULL,
-            description varchar(500) NULL,
-            usable TINYINT NULL,
-            created_at datetime NULL,
-            updated_at datetime NULL,
-            FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
-            ) ENGINE=InnoDB DEFAULT CHARSET {$wbdb_charset} COLLATE {$wpdb_collate}";
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta( $sql_tasks );
-    }
+    $sql_tasks = "CREATE TABLE IF NOT EXISTS {$table_tasks} (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        forfait_id BIGINT UNSIGNED NOT NULL,
+        task_time time NOT NULL,
+        description varchar(500) NULL,
+        usable TINYINT NULL,
+        created_at datetime NULL,
+        updated_at datetime NULL,
+        FOREIGN KEY (forfait_id) REFERENCES $table_forfait(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET {$wbdb_charset} COLLATE {$wpdb_collate}";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql_forfait);
+    dbDelta($sql_tasks);
 }
 
 add_action('admin_init', 'fs_dbOperatorFunctions');
