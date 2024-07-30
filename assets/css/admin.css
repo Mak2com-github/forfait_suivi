@@ -25,7 +25,7 @@
     background-color: var(--main-white);
 }
 .closeFormButton i {
-    color: #7E0508;
+    color: #bb0000;
     font-size: 14px;
     display: inline;
     padding: 0;
@@ -35,7 +35,7 @@
     color: orange;
 }
 .alert-red {
-    color: red;
+    color: #bb0000;
 }
 
 .displayNone {
@@ -80,14 +80,17 @@
 .forfait-main .head .alert-message {
     background-color: #bb0000;
     position: fixed;
+    z-index: 50;
     width: 100%;
     left: 0;
     top: 1%;
     color: white;
     font-size: 20px;
-    padding: 5px 5%;
-    transition: 0.5s ease-in-out;
-    display: none;
+    font-weight: 600;
+    padding: 5px 5%;;
+    transform: translateY(-100%);
+    transition: all 0.2s ease-in-out;
+    opacity: 0;
 }
 
 .session-msg {
@@ -601,14 +604,17 @@
 }
 
 .selected-forfait-alert {
-    background-color: red;
-    padding: 0 5%;
-    width: 90%;
+    background-color: #bb0000;
+    padding: 0.5rem 2rem;
+    width: auto;
+    box-shadow:  #c0b2db24 5px 15px 10px 0;
+    border-radius: 50px;
 }
 
 .selected-forfait-alert p {
     color: white;
     font-size: 18px;
+    font-weight: 600;
     margin: 0;
     text-align: center;
 }
