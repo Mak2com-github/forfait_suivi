@@ -33,22 +33,24 @@ class DBActions
      */
     public function createForfait($datas): void
     {
-        if (!empty($datas)) {
-            $forfait = $this->validateDatas($datas);
-            $sql = $this->wpdb->prepare(
-                "INSERT INTO {$this->ForfaitTable}
+        if (current_user_can('manage_options')) {
+            if (!empty($datas)) {
+                $forfait = $this->validateDatas($datas);
+                $sql = $this->wpdb->prepare(
+                    "INSERT INTO {$this->ForfaitTable}
                 (title, total_time, description, created_at, updated_at) VALUES (%s, (SEC_TO_TIME(%d)), %s, %s, %s)",
-                $forfait['title'],
-                $forfait['total_time'],
-                $forfait['description'],
-                $forfait['created_at'],
-                $forfait['updated_at']
-            );
-            $this->wpdb->query($sql);
-            if ($error = $this->handleError($this->wpdb->last_error)) {
-                $_SESSION['errors'] = $error;
-            } else {
-                $_SESSION['create_success'] = "Forfait Ajouté !";
+                    $forfait['title'],
+                    $forfait['total_time'],
+                    $forfait['description'],
+                    $forfait['created_at'],
+                    $forfait['updated_at']
+                );
+                $this->wpdb->query($sql);
+                if ($error = $this->handleError($this->wpdb->last_error)) {
+                    $_SESSION['errors'] = $error;
+                } else {
+                    $_SESSION['create_success'] = "Forfait Ajouté !";
+                }
             }
         }
     }
@@ -58,13 +60,15 @@ class DBActions
      */
     public function deleteForfait($id): void
     {
-        $id = strip_tags($id);
-        $this->wpdb->delete($this->TasksTable, ['forfait_id' => $id]);
-        $this->wpdb->delete($this->ForfaitTable, ['id' => $id]);
-        if ($error = $this->handleError($this->wpdb->last_error)) {
-            $_SESSION['errors'] = $error;
-        } else {
-            $_SESSION['delete_success'] = "Forfait Supprimé !";
+        if (current_user_can('manage_options')) {
+            $id = strip_tags($id);
+            $this->wpdb->delete($this->TasksTable, ['forfait_id' => $id]);
+            $this->wpdb->delete($this->ForfaitTable, ['id' => $id]);
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['delete_success'] = "Forfait Supprimé !";
+            }
         }
     }
 
@@ -73,25 +77,27 @@ class DBActions
      */
     public function updateForfait($datas): void
     {
-        if (!empty($datas)) {
-            $forfait = $this->ValidateDatas($datas);
-            if (empty($_SESSION['errors'])) {
-                $sql = $this->wpdb->prepare(
-                    "UPDATE {$this->ForfaitTable} 
+        if (current_user_can('manage_options')) {
+            if (!empty($datas)) {
+                $forfait = $this->ValidateDatas($datas);
+                if (empty($_SESSION['errors'])) {
+                    $sql = $this->wpdb->prepare(
+                        "UPDATE {$this->ForfaitTable} 
                             SET title = %s,
                                 description = %s,
                                 updated_at = %s
                             WHERE id = %d",
-                    $forfait['title'],
-                    $forfait['description'],
-                    $forfait['updated_at'],
-                    $forfait['id']
-                );
-                $this->wpdb->query($sql);
-                if ($error = $this->handleError($this->wpdb->last_error)) {
-                    $_SESSION['errors'] = $error;
-                } else {
-                    $_SESSION['update_success'] = "Forfait mis à jour !";
+                        $forfait['title'],
+                        $forfait['description'],
+                        $forfait['updated_at'],
+                        $forfait['id']
+                    );
+                    $this->wpdb->query($sql);
+                    if ($error = $this->handleError($this->wpdb->last_error)) {
+                        $_SESSION['errors'] = $error;
+                    } else {
+                        $_SESSION['update_success'] = "Forfait mis à jour !";
+                    }
                 }
             }
         }
@@ -102,35 +108,37 @@ class DBActions
      */
     public function updateForfaitTime($datas): void
     {
-        if (!empty($datas)) {
-            $remainingTime = $this->getForfaitTime($datas['id']);
-            $remainingTime = $this->TimeToSec($remainingTime);
-            $submitedTime = $datas['total_time'];
-            $submitedTime = $this->TimeToSec($submitedTime);
-            $timeToAdd = $remainingTime + $submitedTime;
-            $timeToAdd = $this->SecToTime($timeToAdd);
+        if (current_user_can('manage_options')) {
+            if (!empty($datas)) {
+                $remainingTime = $this->getForfaitTime($datas['id']);
+                $remainingTime = $this->TimeToSec($remainingTime);
+                $submitedTime = $datas['total_time'];
+                $submitedTime = $this->TimeToSec($submitedTime);
+                $timeToAdd = $remainingTime + $submitedTime;
+                $timeToAdd = $this->SecToTime($timeToAdd);
 
-            $datas['total_time'] = $timeToAdd;
+                $datas['total_time'] = $timeToAdd;
 
-            $forfait = $this->ValidateDatas($datas);
+                $forfait = $this->ValidateDatas($datas);
 
-            if (empty($_SESSION['errors'])) {
-                $sql = $this->wpdb->prepare(
-                    "UPDATE {$this->ForfaitTable} 
+                if (empty($_SESSION['errors'])) {
+                    $sql = $this->wpdb->prepare(
+                        "UPDATE {$this->ForfaitTable} 
                             SET total_time = (SEC_TO_TIME(%d)),
                                 updated_at = %s
                             WHERE id = %d",
-                    $forfait['total_time'],
-                    $forfait['updated_at'],
-                    $forfait['id']
-                );
-                $this->wpdb->query($sql);
+                        $forfait['total_time'],
+                        $forfait['updated_at'],
+                        $forfait['id']
+                    );
+                    $this->wpdb->query($sql);
 
-                if ($error = $this->handleError($this->wpdb->last_error)) {
-                    $_SESSION['errors'] = $error;
-                } else {
-                    $this->deactivateTasks($forfait['id']);
-                    $_SESSION['update_success'] = "Temps du forfait mis à jour !";
+                    if ($error = $this->handleError($this->wpdb->last_error)) {
+                        $_SESSION['errors'] = $error;
+                    } else {
+                        $this->deactivateTasks($forfait['id']);
+                        $_SESSION['update_success'] = "Temps du forfait mis à jour !";
+                    }
                 }
             }
         }
@@ -141,29 +149,28 @@ class DBActions
      */
     public function createTask($datas): void
     {
-        if (!empty($datas)) {
-
-            $task = $this->ValidateDatas($datas);
-            $task['usable'] = 1;
-
-            $this->decrementForfaitTime($task['forfait_id'], $datas['task_time']);
-
-            if (empty($_SESSION['errors'])) {
-                $sql = $this->wpdb->prepare(
-                    "INSERT INTO {$this->TasksTable}
+        if (current_user_can('manage_options')) {
+            if (!empty($datas)) {
+                $task = $this->ValidateDatas($datas);
+                $task['usable'] = 1;
+                $this->decrementForfaitTime($task['forfait_id'], $datas['task_time']);
+                if (empty($_SESSION['errors'])) {
+                    $sql = $this->wpdb->prepare(
+                        "INSERT INTO {$this->TasksTable}
                         (forfait_id, task_time, description, usable, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%s,%s)",
-                    $task['forfait_id'],
-                    $task['task_time'],
-                    $task['description'],
-                    $task['usable'],
-                    $task['created_at'],
-                    $task['updated_at']
-                );
-                $this->wpdb->query($sql);
-                if ($error = $this->handleError($this->wpdb->last_error)) {
-                    $_SESSION['errors'] = $error;
-                } else {
-                    $_SESSION['create_success'] = "Tâche Ajoutée !";
+                        $task['forfait_id'],
+                        $task['task_time'],
+                        $task['description'],
+                        $task['usable'],
+                        $task['created_at'],
+                        $task['updated_at']
+                    );
+                    $this->wpdb->query($sql);
+                    if ($error = $this->handleError($this->wpdb->last_error)) {
+                        $_SESSION['errors'] = $error;
+                    } else {
+                        $_SESSION['create_success'] = "Tâche Ajoutée !";
+                    }
                 }
             }
         }
@@ -174,18 +181,20 @@ class DBActions
      */
     public function deleteTask($id, $forfait, $time): void
     {
-        $id = strip_tags($id);
+        if (current_user_can('manage_options')) {
+            $id = strip_tags($id);
 
-        if ($this->isTaskActive($id) === "1") {
-            $this->incrementForfaitTime($forfait, $time);
-        }
+            if ($this->isTaskActive($id) === "1") {
+                $this->incrementForfaitTime($forfait, $time);
+            }
 
-        $this->wpdb->delete($this->TasksTable, array('id' => $id));
+            $this->wpdb->delete($this->TasksTable, array('id' => $id));
 
-        if ($error = $this->handleError($this->wpdb->last_error)) {
-            $_SESSION['errors'] = $error;
-        } else {
-            $_SESSION['delete_success'] = "Tâche Supprimé !";
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['delete_success'] = "Tâche Supprimé !";
+            }
         }
     }
 
@@ -223,55 +232,59 @@ class DBActions
     }
 
     public function updateTask($task_id, $description, $time) {
-        $task_id = intval($task_id);
-        $description = sanitize_text_field($description);
-        $time = sanitize_text_field($time);
+        if (current_user_can('manage_options')) {
+            $task_id = intval($task_id);
+            $description = sanitize_text_field($description);
+            $time = sanitize_text_field($time);
 
-        $current_task = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->TasksTable} WHERE id = %d", $task_id));
-        $current_time_seconds = $this->TimeToSec($current_task->task_time);
-        $new_time_seconds = $this->TimeToSec($time);
-        $time_difference = $new_time_seconds - $current_time_seconds;
+            $current_task = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->TasksTable} WHERE id = %d", $task_id));
+            $current_time_seconds = $this->TimeToSec($current_task->task_time);
+            $new_time_seconds = $this->TimeToSec($time);
+            $time_difference = $new_time_seconds - $current_time_seconds;
 
-        $updated = $this->wpdb->update(
-            $this->TasksTable,
-            array(
-                'description' => $description,
-                'task_time' => $time,
-                'updated_at' => current_time('mysql', 1)
-            ),
-            array('id' => $task_id),
-            array(
-                '%s',
-                '%s',
-                '%s'
-            ),
-            array('%d')
-        );
+            $updated = $this->wpdb->update(
+                $this->TasksTable,
+                array(
+                    'description' => $description,
+                    'task_time' => $time,
+                    'updated_at' => current_time('mysql', 1)
+                ),
+                array('id' => $task_id),
+                array(
+                    '%s',
+                    '%s',
+                    '%s'
+                ),
+                array('%d')
+            );
 
-        if ($updated !== false) {
-            $this->updatePackageTime($current_task->forfait_id, $time_difference);
+            if ($updated !== false) {
+                $this->updatePackageTime($current_task->forfait_id, $time_difference);
+            }
+
+            return $updated !== false;
         }
-
-        return $updated !== false;
     }
 
     private function updatePackageTime($forfait_id, $time_difference) {
-        $forfait = $this->wpdb->get_row($this->wpdb->prepare("SELECT total_time FROM {$this->ForfaitTable} WHERE id = %d", $forfait_id));
-        $forfait_time_seconds = $this->TimeToSec($forfait->total_time);
-        $new_forfait_time_seconds = $forfait_time_seconds - $time_difference;
-        $new_forfait_time = $this->SecToTime($new_forfait_time_seconds);
+        if (current_user_can('manage_options')) {
+            $forfait = $this->wpdb->get_row($this->wpdb->prepare("SELECT total_time FROM {$this->ForfaitTable} WHERE id = %d", $forfait_id));
+            $forfait_time_seconds = $this->TimeToSec($forfait->total_time);
+            $new_forfait_time_seconds = $forfait_time_seconds - $time_difference;
+            $new_forfait_time = $this->SecToTime($new_forfait_time_seconds);
 
-        $this->wpdb->update(
-            $this->ForfaitTable,
-            array('total_time' => $new_forfait_time, 'updated_at' => current_time('mysql', 1)),
-            array('id' => $forfait_id),
-            array('%s', '%s'),
-            array('%d')
-        );
-        if ($error = $this->handleError($this->wpdb->last_error)) {
-            $_SESSION['errors'] = $error;
-        } else {
-            $_SESSION['delete_success'] = "Tâche Supprimé !";
+            $this->wpdb->update(
+                $this->ForfaitTable,
+                array('total_time' => $new_forfait_time, 'updated_at' => current_time('mysql', 1)),
+                array('id' => $forfait_id),
+                array('%s', '%s'),
+                array('%d')
+            );
+            if ($error = $this->handleError($this->wpdb->last_error)) {
+                $_SESSION['errors'] = $error;
+            } else {
+                $_SESSION['delete_success'] = "Tâche Supprimé !";
+            }
         }
     }
 

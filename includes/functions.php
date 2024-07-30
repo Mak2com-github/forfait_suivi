@@ -2,17 +2,28 @@
 
 /** INITIALISATION DU PLUGIN **/
 add_action('admin_menu','fs_init_plugin_menu');
-function fs_init_plugin_menu(): void
-{
-    add_menu_page(
-        'Forfait Suivi',
-        'Forfait Suivi',
-        'manage_options',
-        'forfait_suivi',
-        'forfait_overview',
-        'dashicons-calendar-alt',
-        3
-    );
+function fs_init_plugin_menu(): void {
+    if (!fs_user_has_disallowed_role()) {
+        add_menu_page(
+            'Forfait Suivi',
+            'Forfait Suivi',
+            'read',
+            'forfait_suivi',
+            'forfait_overview',
+            'dashicons-calendar-alt',
+            3
+        );
+    }
+}
+function fs_user_has_disallowed_role(): bool {
+    $user = wp_get_current_user();
+    $disallowed_roles = ['client', 'abonnée'];
+    foreach ($disallowed_roles as $role) {
+        if (in_array($role, (array) $user->roles)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /** ACTIVATION CSS / JS / BOOTSTRAP **/
@@ -31,6 +42,17 @@ function fs_custom_dashboard_widgets(): void
 {
     global $wp_meta_boxes;
     wp_add_dashboard_widget('custom_help_widget', 'Forfait Suivi', 'fs_custom_dashboard_help');
+}
+
+/**
+ * Render action buttons if the current user has the 'manage_options' capability.
+ *
+ * @return bool Returns true if the current user has the 'manage_options' capability, false otherwise.
+ */
+function render_action_buttons() {
+    if (current_user_can('manage_options')) {
+        return true;
+    }
 }
 
 function fs_custom_dashboard_help(): void

@@ -119,22 +119,22 @@ function alertDeleteConfirm() {
 
     if (deleteBtn) {
         deleteBtn.addEventListener('mouseenter', function () {
-            deleteMessage.classList.add('displayBlock')
+            deleteMessage.classList.add('translateY0')
         })
     }
     if (deleteBtn) {
         deleteBtn.addEventListener('mouseleave', function () {
-            deleteMessage.classList.remove('displayBlock')
+            deleteMessage.classList.remove('translateY0')
         })
     }       
     if (updateBtn) {
         updateBtn.addEventListener('mouseenter', function () {
-            updateMessage.classList.add('displayBlock')
+            updateMessage.classList.add('translateY0')
         })
     }
     if (updateBtn) {
         updateBtn.addEventListener('mouseleave', function () {
-            updateMessage.classList.remove('displayBlock')
+            updateMessage.classList.remove('translateY0')
         })
     }
 }
@@ -200,10 +200,34 @@ function setupEditTaskButtons() {
     });
 }
 
+function openInfos() {
+    const infosBtn = document.getElementById('infosBtn');
+    const infos = document.querySelector('.forfait-instructions');
+    if (infosBtn && infos) {
+        infosBtn.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (!infos.classList.contains('translateY0')) {
+                infos.classList.add('translateY0');
+                setTimeout(() => {
+                    document.addEventListener('click', closeInfosOnClickOutside);
+                }, 0);
+            }
+        });
+    }
+
+    function closeInfosOnClickOutside(event) {
+        if (infos.classList.contains('translateY0') && !infos.contains(event.target) && event.target !== infosBtn) {
+            infos.classList.remove('translateY0');
+            document.removeEventListener('click', closeInfosOnClickOutside);
+        }
+    }
+}
+
 jQuery(document).ready( function () {
     closeFormAlert()
     toggleForms()
     alertDeleteConfirm()
     formatTimeInput()
     setupEditTaskButtons()
+    openInfos()
 })

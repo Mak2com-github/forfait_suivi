@@ -8,7 +8,7 @@
  * Plugin Name:       Forfait Suivi
  * Plugin URI:        https://mak2com.fr
  * Description:       Permet la création de forfait de suivi des intervention techniques effectués pour le site du client, ainsi que la création et la gestion des tâches effectués.
- * Version:           3.2.1
+ * Version:           3.2.2
  * Author:            Alexandre Celier
  * Author URI:        https://mak2com.fr/
  * License:           GPL-2.0+
@@ -66,35 +66,36 @@ function fs_create_db(): void
 add_action('admin_init', 'fs_dbOperatorFunctions');
 function fs_dbOperatorFunctions(): void
 {
-    $DBAction = new DBActions();
-
-    if (isset($_POST['save_forfait'])) {
-        check_admin_referer('save_forfait_action', 'save_forfait_nonce');
-        $DBAction->createForfait($_POST);
-    }
-    if (isset($_POST['update_forfait'])) {
-        check_admin_referer('update_forfait_action', 'update_forfait_nonce');
-        $DBAction->updateForfait($_POST);
-    }
-    if (isset($_POST['update_forfait_time'])) {
-        check_admin_referer('update_forfait_time_action', 'update_forfait_time_nonce');
-        $DBAction->updateForfaitTime($_POST);
-    }
-    if (isset($_POST['delete_forfait'])) {
-        check_admin_referer('delete_forfait_action', 'delete_forfait_nonce');
-        $DBAction->deleteForfait($_POST['id']);
-    }
-    if (isset($_POST['save_task'])) {
-        check_admin_referer('save_task_action', 'save_task_nonce');
-        $DBAction->createTask($_POST);
-    }
-    if (isset($_POST['delete_task'])) {
-        check_admin_referer('delete_task_action', 'delete_task_nonce');
-        $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
-    }
-    if (isset($_POST['edit_task'])) {
-        check_admin_referer('edit_task_action', 'edit_task_nonce');
-        $DBAction->updateTask($_POST['task_id'], $_POST['description'], $_POST['task_time']);
+    if (current_user_can('manage_options')) {
+        $DBAction = new DBActions();
+        if (isset($_POST['save_forfait'])) {
+            check_admin_referer('save_forfait_action', 'save_forfait_nonce');
+            $DBAction->createForfait($_POST);
+        }
+        if (isset($_POST['update_forfait'])) {
+            check_admin_referer('update_forfait_action', 'update_forfait_nonce');
+            $DBAction->updateForfait($_POST);
+        }
+        if (isset($_POST['update_forfait_time'])) {
+            check_admin_referer('update_forfait_time_action', 'update_forfait_time_nonce');
+            $DBAction->updateForfaitTime($_POST);
+        }
+        if (isset($_POST['delete_forfait'])) {
+            check_admin_referer('delete_forfait_action', 'delete_forfait_nonce');
+            $DBAction->deleteForfait($_POST['id']);
+        }
+        if (isset($_POST['save_task'])) {
+            check_admin_referer('save_task_action', 'save_task_nonce');
+            $DBAction->createTask($_POST);
+        }
+        if (isset($_POST['delete_task'])) {
+            check_admin_referer('delete_task_action', 'delete_task_nonce');
+            $DBAction->deleteTask($_POST['id'], $_POST['forfait_id'], $_POST['time']);
+        }
+        if (isset($_POST['edit_task'])) {
+            check_admin_referer('edit_task_action', 'edit_task_nonce');
+            $DBAction->updateTask($_POST['task_id'], $_POST['description'], $_POST['task_time']);
+        }
     }
 }
 
