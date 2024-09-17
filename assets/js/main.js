@@ -79,10 +79,13 @@ function toggleForms() {
 
     if (addTaskForm) {
         addTaskBtn.addEventListener('click', function() {
+            console.log("click")
             if (addTaskForm.classList.contains('translateY0')) {
                 addTaskForm.classList.remove('translateY0')
+                addTaskForm.style.display = 'none';
             } else {
                 addTaskForm.classList.add('translateY0')
+                addTaskForm.style.display = 'block';
             }
             if (updateForfaitForm.classList.contains('translateY0')) {
                 updateForfaitForm.classList.remove('translateY0')
@@ -190,6 +193,7 @@ function setupEditTaskButtons() {
             document.getElementById('edit_task_description').value = taskDescription;
 
             editTaskForm.style.display = 'block';
+            editTaskForm.classList.add('translateY0');
             addTaskForm.style.display = 'none';
         });
     });

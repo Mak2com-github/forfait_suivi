@@ -29,6 +29,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 require_once plugin_dir_path(__FILE__) . 'views/admin/forfait-overview.php';
 
 register_activation_hook(__FILE__, 'fs_create_db');
+
 function fs_create_db(): void
 {
     global $wpdb;
