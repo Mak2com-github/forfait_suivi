@@ -77,7 +77,7 @@ function toggleForms() {
         })
     }
 
-    if (addTaskForm) {
+    if (addTaskForm && addTaskBtn) {
         addTaskBtn.addEventListener('click', function() {
             console.log("click")
             if (addTaskForm.classList.contains('translateY0')) {
