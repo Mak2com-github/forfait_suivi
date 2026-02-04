@@ -1,13 +1,24 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
 :root {
     --main-white: #ffffff;
-    --main-orange: #d77900;
-    --main-grey: #2f4f4f;
-    --light-grey: #e5e5e5;
-    --light-blue: #aaaaf7;
-    --light-green: #c3f7aa;
-    --light-orange: #f7dcaa;
-    --light-red: #f7aaaa;
+    --main-orange: #0f172a;
+    --main-grey: #334155;
+    --light-grey: #e2e8f0;
+    --light-blue: #bae6fd;
+    --light-green: #bbf7d0;
+    --light-orange: #fde68a;
+    --light-red: #fecaca;
+    --surface: #f8fafc;
+    --surface-muted: #f1f5f9;
+    --shadow-sm: 0 1px 2px rgba(42, 29, 15, 0.08);
+    --shadow-md: 0 10px 24px rgba(42, 30, 15, 0.12);
+    --shadow-lg: 0 20px 40px rgba(42, 33, 15, 0.16);
+    --accent: #0f766e;
+    --accent-strong: #115e59;
+    --danger: #dc2626;
+    --warning: #d97706;
 }
 
 .closeFormButton {
@@ -87,7 +98,7 @@
     color: white;
     font-size: 20px;
     font-weight: 600;
-    padding: 5px 5%;;
+    padding: 15px 5%;;
     transform: translateY(-100%);
     transition: all 0.2s ease-in-out;
     opacity: 0;
@@ -242,6 +253,14 @@
     border-radius: 50px;
     box-shadow: 0 0 5px 1px rgba(0 0 0 / 20%);
     background-color: #60d860;
+    border: 2px solid var(--main-white);
+}
+.usable-reload {
+    width: 20px;
+    height: 20px;
+    border-radius: 50px;
+    box-shadow: 0 0 5px 1px rgba(0 0 0 / 20%);
+    background-color: #60a5fa;
     border: 2px solid var(--main-white);
 }
 
@@ -716,4 +735,256 @@
 .forfait-instructions .instructions-content ul {
     list-style: square;
     padding-left: 25px;
+}
+
+/* Modern UI overrides */
+.forfait-main {
+    font-family: "Sora", "Segoe UI", sans-serif;
+    color: var(--main-grey);
+    background: radial-gradient(circle at top right, rgba(15, 118, 110, 0.08), transparent 55%), var(--surface);
+    border-radius: 18px;
+    padding: 2rem;
+    margin-top: 1rem;
+    width: 95%;
+    box-shadow: var(--shadow-md);
+}
+
+.forfait-main .head {
+    border-bottom: 1px solid var(--light-grey);
+    margin: 1.5rem 0 2rem;
+}
+
+.forfait-main .head .alert-message {
+    background: var(--danger);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    font-size: 16px;
+}
+
+.session-msg {
+    border-radius: 12px;
+    color: var(--main-grey);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-sm);
+}
+.session-msg p,
+.session-msg i {
+    color: var(--main-grey);
+}
+.session-success {
+    background: #ecfdf5;
+    border-left: 6px solid #10b981;
+}
+.session-alert {
+    background: #fef2f2;
+    border-left: 6px solid #ef4444;
+}
+
+.forms-container,
+.forfait-instructions {
+    width: min(520px, 92%);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--light-grey);
+    background: var(--main-white);
+}
+
+.forms-container form h2 {
+    color: var(--accent);
+    letter-spacing: 0.03em;
+    text-transform: none;
+}
+
+.forms-container form .form-information > p {
+    color: var(--warning);
+}
+
+.forms-container form .forms-container-fields label {
+    color: var(--main-grey);
+}
+.forms-container form .forms-container-fields label.label-main-title {
+    color: var(--accent);
+    text-transform: none;
+}
+
+.forms-container form .forms-container-fields input,
+.forms-container form .forms-container-fields textarea {
+    border: 1px solid var(--light-grey);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+}
+
+.forms-container form .custom-plugin-submit {
+    background: var(--accent);
+    color: var(--main-white);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    text-transform: none;
+    letter-spacing: 0.02em;
+}
+.forms-container form .custom-plugin-submit:hover {
+    background: var(--accent-strong);
+}
+
+.overview-head {
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.status-legend-main {
+    width: 280px;
+    border-radius: 16px;
+    border: 1px solid var(--light-grey);
+    box-shadow: var(--shadow-sm);
+}
+.status-legend-main h2 {
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+}
+.status-legend-main .status-legend-block p {
+    color: var(--main-grey);
+}
+
+.selected-forfait {
+    width: auto;
+    flex: 1;
+}
+.selected-forfait .selected-forfait-head {
+    border-radius: 16px;
+    border: 1px solid var(--light-grey);
+    box-shadow: var(--shadow-sm);
+}
+.selected-forfait .selected-forfait-head h1 {
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+}
+.selected-forfait .selected-forfait-head p {
+    color: var(--main-grey);
+}
+
+.overview-list-container {
+    gap: 2rem;
+}
+.overview-forfaits-infos {
+    width: 320px;
+}
+.tasks-listing {
+    width: auto;
+    flex: 1;
+}
+
+.selected-forfait-table .selected-forfait-table-row {
+    border-radius: 14px;
+    border: 1px solid var(--light-grey);
+    box-shadow: var(--shadow-sm);
+    background: var(--main-white);
+}
+.selected-forfait-table .selected-forfait-table-row h3,
+.selected-forfait-table .selected-forfait-table-row p {
+    color: var(--main-grey);
+}
+
+.task-table .task-table-head,
+.task-table .task-table-row {
+    border: 1px solid var(--light-grey);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    background: var(--main-white);
+}
+
+.update-btn,
+.add-time-btn,
+.delete-btn,
+.create-btn {
+    border-radius: 999px;
+    border: 1px solid var(--light-grey);
+    box-shadow: var(--shadow-sm);
+}
+.update-btn:hover {
+    background-color: #e0f2fe;
+    border-color: #bae6fd;
+}
+.add-time-btn:hover {
+    background-color: #fef3c7;
+    border-color: #fde68a;
+}
+.create-btn:hover {
+    background-color: #dcfce7;
+    border-color: #bbf7d0;
+}
+.delete-btn:hover {
+    background-color: #fee2e2;
+    border-color: #fecaca;
+}
+
+.selected-forfait-alert {
+    background: var(--main-white);
+    border: 1px solid var(--light-grey);
+    box-shadow: var(--shadow-sm);
+    border-radius: 14px;
+}
+.selected-forfait-alert p {
+    color: var(--main-grey);
+}
+.selected-forfait-alert.is-over {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+.selected-forfait-alert.is-over p {
+    color: #991b1b;
+}
+.selected-forfait-alert.is-zero {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+.selected-forfait-alert.is-zero p {
+    color: #9a3412;
+}
+.selected-forfait-alert.is-warning {
+    background: #fef9c3;
+    border-color: #fde68a;
+}
+.selected-forfait-alert.is-warning p {
+    color: #854d0e;
+}
+
+@media (max-width: 1100px) {
+    .overview-head {
+        flex-direction: column;
+    }
+    .status-legend-main {
+        width: 100%;
+    }
+    .selected-forfait {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .overview-list-container {
+        flex-direction: column;
+    }
+    .overview-forfaits-infos,
+    .tasks-listing {
+        width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .task-table .task-table-head,
+    .task-table .task-table-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .task-table .task-table-head .task-table-head-col,
+    .task-table .task-table-row .task-table-row-col {
+        width: 100% !important;
+        border: none !important;
+        justify-content: flex-start;
+    }
 }

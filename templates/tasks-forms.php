@@ -23,7 +23,7 @@
                 <input type="hidden" name="forfait_id" value="<?= $forfait[0]->id ?>">
             </div>
             <div class="forms-container-fields">
-                <label id="taskTimeLabel" class="label-main-title" for="task_time">Durée <span>MAX: <?= $forfaitTotalTime ?></span></label>
+                <label id="taskTimeLabel" class="label-main-title" for="task_time">Durée <span>Solde actuel: <?= $forfaitTotalTime ?></span></label>
                 <input id="task_time" name="task_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
             </div>
             <div class="forms-container-fields">
@@ -48,7 +48,7 @@
                 <input type="hidden" name="forfait_id" value="<?= $forfait[0]->id ?>">
             </div>
             <div class="forms-container-fields">
-                <label id="editTaskTimeLabel" class="label-main-title" for="edit_task_time">Durée <span>MAX: <?= $forfaitTotalTime ?></span></label>
+                <label id="editTaskTimeLabel" class="label-main-title" for="edit_task_time">Durée <span>Solde actuel: <?= $forfaitTotalTime ?></span></label>
                 <input id="edit_task_time" name="task_time" type="text" placeholder="HH:MM:SS" required pattern="^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$">
             </div>
             <div class="forms-container-fields">
