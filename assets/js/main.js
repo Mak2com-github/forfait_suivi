@@ -1,23 +1,10 @@
 function selectForfaitTimeCheck(value)
 {
-    if (value) {
-        var inputTime = document.getElementById("task_time")
-        var labelTime = document.getElementById("taskTimeLabel")
-        var submitTask = document.getElementById("addTaskSubmit")
-
-        if (inputTime) {
-            if (inputTime.hasAttribute('max')) {
-                inputTime.removeAttribute('max')
-                labelTime.textContent = "Durée";
-            }
-            inputTime.setAttribute("max", value)
-        }
-
-        labelTime.textContent += " (Max "+value+")"
-
-        if (value === '00:00:00') {
-            submitTask.style.pointerEvents = 'none'
-            submitTask.setAttribute("value", "IMPOSSIBLE")
+    var labelTime = document.getElementById("taskTimeLabel")
+    if (labelTime) {
+        labelTime.textContent = "Durée"
+        if (value) {
+            labelTime.textContent += " (Solde actuel: " + value + ")"
         }
     }
 }

@@ -11,6 +11,10 @@ function forfait_overview(): void
     if (!empty($forfait)) {
         $tasksTotalTime = $DBAction->getTimeTotalsForTasks($forfait[0]->id);
         $remainingTime = $DBAction->getForfaitTime($forfait[0]->id);
+        $remainingSeconds = is_string($remainingTime) ? $DBAction->TimeToSec($remainingTime) : null;
+        if (!is_int($remainingSeconds)) {
+            $remainingSeconds = null;
+        }
     }
     ?>
     <div class="forfait-main">
@@ -45,6 +49,10 @@ function forfait_overview(): void
                     <div class="usable-true"></div>
                     <p>Tâche débitée sur le forfait en cours</p>
                 </div>
+                <div class="status-legend-block">
+                    <div class="usable-reload"></div>
+                    <p>Recharge du forfait</p>
+                </div>
             </div>
             <?php
             if (!empty($forfait)) :
@@ -69,12 +77,16 @@ function forfait_overview(): void
                     if (!empty($forfait)) :
                     ?>
                     <div class="selected-forfait-datas">
-                        <?php if (!empty($remainingTime) && $remainingTime <= '00:00:00') : ?>
-                            <div class="selected-forfait-alert">
+                        <?php if ($remainingSeconds !== null && $remainingSeconds < 0) : ?>
+                            <div class="selected-forfait-alert is-over">
+                                <p>Dépassement de <?= $DBAction->SecToTime(abs($remainingSeconds)) ?> !</p>
+                            </div>
+                        <?php elseif ($remainingSeconds !== null && $remainingSeconds === 0) : ?>
+                            <div class="selected-forfait-alert is-zero">
                                 <p>Forfait épuisé !</p>
                             </div>
-                        <?php elseif (!empty($remainingTime) && $remainingTime <= '01:00:00') : ?>
-                            <div class="selected-forfait-alert">
+                        <?php elseif ($remainingSeconds !== null && $remainingSeconds <= 3600) : ?>
+                            <div class="selected-forfait-alert is-warning">
                                 <p>Attention !</br> Le temps de ce forfait est bientôt épuisé !</p>
                                 <p>Temps Restant : <?= $remainingTime ?></p>
                             </div>
@@ -129,13 +141,11 @@ function forfait_overview(): void
                                             <img src="<?= plugins_url('../assets/img/trash.svg', dirname(__FILE__)); ?>" alt="Supprimer">
                                         </button>
                                     </form>
-                                    <?php if (!empty($remainingTime) && $remainingTime > '00:00:00') : ?>
-                                        <div class="action-btn-container">
-                                            <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTaskBtn" title="Ajouter une tâche">
-                                                <img src="<?= plugins_url('../assets/img/add-task.svg', dirname(__FILE__)); ?>" alt="Ajouter une tache">
-                                            </button>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="action-btn-container">
+                                        <button class="create-btn" onclick="selectForfaitTimeCheck('<?= $remainingTime ?>')" id="addTaskBtn" title="Ajouter une tâche">
+                                            <img src="<?= plugins_url('../assets/img/add-task.svg', dirname(__FILE__)); ?>" alt="Ajouter une tache">
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <?php endif; ?>
@@ -160,7 +170,10 @@ function forfait_overview(): void
                                     <p>Si l’icône est rouge, elle indique que la tâche est une tâche historique, elle n’est ainsi pas déduite du forfait en cours, et sa suppression n’aura aucune conséquence sur le forfait en cours.</p>
                                 </li>
                                 <li>
-                                    <p>Vous pouvez recharger un forfait à tout moment, même s’il est épuisé. Cependant, <strong>ATTENTION</strong> recharger un forfait aura pour résultat de délier les tâches en ajoutées depuis sa création (ou depuis sa dernière recharge).</p>
+                                    <p>Si l’icône est bleue, elle indique une recharge du forfait. Cette ligne est un historique et ne déduit pas de temps.</p>
+                                </li>
+                                <li>
+                                    <p>Vous pouvez recharger un forfait à tout moment, même s’il est épuisé ou en dépassement. Le temps ajouté compensera d’abord le dépassement. Cependant, <strong>ATTENTION</strong> recharger un forfait aura pour résultat de délier les tâches en ajoutées depuis sa création (ou depuis sa dernière recharge).</p>
                                 </li>
                                 <li>
                                     <p>Vous pouvez modifier le titre et la description d’un forfait, cela n’a aucune incidence sur le forfait ou les tâches</p>
@@ -212,6 +225,8 @@ function forfait_overview(): void
                                         <div class="usable-false"></div>
                                         <?php elseif ($task->usable === '1') : ?>
                                         <div class="usable-true"></div>
+                                        <?php elseif ($task->usable === '2') : ?>
+                                        <div class="usable-reload"></div>
                                         <?php endif; ?>
                                     </div>
                                     <div class="task-table-row-col">

@@ -30,9 +30,20 @@
             <button class="closeFormButton">X</button>
         </div>
         <form method="post" action="admin.php?page=forfait_suivi">
-            <?php if ($forfait[0]->total_time > "00:00:00") : ?>
+            <?php
+            $forfaitSeconds = isset($forfait[0]->total_time) ? $DBAction->TimeToSec($forfait[0]->total_time) : null;
+            if (is_int($forfaitSeconds) && $forfaitSeconds > 0) :
+            ?>
             <div class="form-information">
-                <p>Il reste <?= $forfait[0]->total_time ?> sur se forfait <br>Le temps que vous ajoutez sera additionné au temps restant</p>
+                <p>Il reste <?= $forfait[0]->total_time ?> sur ce forfait <br>Le temps que vous ajoutez sera additionné au temps restant</p>
+            </div>
+            <?php elseif (is_int($forfaitSeconds) && $forfaitSeconds < 0) : ?>
+            <div class="form-information">
+                <p>Forfait en dépassement de <?= $DBAction->SecToTime(abs($forfaitSeconds)) ?> <br>Le temps ajouté réduira d'abord ce dépassement</p>
+            </div>
+            <?php elseif (is_int($forfaitSeconds) && $forfaitSeconds === 0) : ?>
+            <div class="form-information">
+                <p>Forfait épuisé. Le temps ajouté repartira de zéro</p>
             </div>
             <?php endif; ?>
             <input type="hidden" name="id" value="<?php if(!empty($forfait[0]->id)) { echo $forfait[0]->id; } ?>">

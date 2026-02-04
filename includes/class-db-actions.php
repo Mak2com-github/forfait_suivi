@@ -110,35 +110,40 @@ class DBActions
     {
         if (current_user_can('manage_options')) {
             if (!empty($datas)) {
+                $submittedSeconds = $this->checkTimeFormat($datas['total_time']);
+                if ($submittedSeconds === false) {
+                    $_SESSION['errors'] = array("Le temps total n'est pas au bon format");
+                    return;
+                }
+
                 $remainingTime = $this->getForfaitTime($datas['id']);
-                $remainingTime = $this->TimeToSec($remainingTime);
-                $submitedTime = $datas['total_time'];
-                $submitedTime = $this->TimeToSec($submitedTime);
-                $timeToAdd = $remainingTime + $submitedTime;
-                $timeToAdd = $this->SecToTime($timeToAdd);
+                $remainingSeconds = $this->TimeToSec($remainingTime);
+                if (!is_int($remainingSeconds)) {
+                    $_SESSION['errors'] = array("Le temps total n'est pas au bon format");
+                    return;
+                }
 
-                $datas['total_time'] = $timeToAdd;
+                $timeToAddSeconds = $remainingSeconds + $submittedSeconds;
+                $updatedAt = current_time('mysql', 1);
+                $forfaitId = intval($datas['id']);
 
-                $forfait = $this->ValidateDatas($datas);
+                $sql = $this->wpdb->prepare(
+                    "UPDATE {$this->ForfaitTable} 
+                        SET total_time = (SEC_TO_TIME(%d)),
+                            updated_at = %s
+                        WHERE id = %d",
+                    $timeToAddSeconds,
+                    $updatedAt,
+                    $forfaitId
+                );
+                $this->wpdb->query($sql);
 
-                if (empty($_SESSION['errors'])) {
-                    $sql = $this->wpdb->prepare(
-                        "UPDATE {$this->ForfaitTable} 
-                            SET total_time = (SEC_TO_TIME(%d)),
-                                updated_at = %s
-                            WHERE id = %d",
-                        $forfait['total_time'],
-                        $forfait['updated_at'],
-                        $forfait['id']
-                    );
-                    $this->wpdb->query($sql);
-
-                    if ($error = $this->handleError($this->wpdb->last_error)) {
-                        $_SESSION['errors'] = $error;
-                    } else {
-                        $this->deactivateTasks($forfait['id']);
-                        $_SESSION['update_success'] = "Temps du forfait mis à jour !";
-                    }
+                if ($error = $this->handleError($this->wpdb->last_error)) {
+                    $_SESSION['errors'] = $error;
+                } else {
+                    $this->deactivateTasks($forfaitId);
+                    $this->logForfaitReload($forfaitId, $submittedSeconds, $updatedAt);
+                    $_SESSION['update_success'] = "Temps du forfait mis à jour !";
                 }
             }
         }
@@ -193,7 +198,7 @@ class DBActions
             if ($error = $this->handleError($this->wpdb->last_error)) {
                 $_SESSION['errors'] = $error;
             } else {
-                $_SESSION['delete_success'] = "Tâche Supprimé !";
+                $_SESSION['delete_success'] = "Tâche Supprimée !";
             }
         }
     }
@@ -236,10 +241,18 @@ class DBActions
             $task_id = intval($task_id);
             $description = sanitize_text_field($description);
             $time = sanitize_text_field($time);
+            $new_time_seconds = $this->checkTimeFormat($time);
+            if ($new_time_seconds === false) {
+                $_SESSION['errors'] = array("Le temps de la tâche n'est pas au bon format");
+                return false;
+            }
 
             $current_task = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->TasksTable} WHERE id = %d", $task_id));
             $current_time_seconds = $this->TimeToSec($current_task->task_time);
-            $new_time_seconds = $this->TimeToSec($time);
+            if (!is_int($current_time_seconds)) {
+                $_SESSION['errors'] = array("Le temps de la tâche n'est pas au bon format");
+                return false;
+            }
             $time_difference = $new_time_seconds - $current_time_seconds;
 
             $updated = $this->wpdb->update(
@@ -258,7 +271,7 @@ class DBActions
                 array('%d')
             );
 
-            if ($updated !== false) {
+            if ($updated !== false && $current_task && (string)$current_task->usable === '1') {
                 $this->updatePackageTime($current_task->forfait_id, $time_difference);
             }
 
@@ -283,8 +296,32 @@ class DBActions
             if ($error = $this->handleError($this->wpdb->last_error)) {
                 $_SESSION['errors'] = $error;
             } else {
-                $_SESSION['delete_success'] = "Tâche Supprimé !";
+                $_SESSION['delete_success'] = "Tâche Supprimée !";
             }
+        }
+    }
+
+    private function logForfaitReload(int $forfait_id, int $added_seconds, string $timestamp): void
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $description = 'Recharge du forfait';
+
+        $sql = $this->wpdb->prepare(
+            "INSERT INTO {$this->TasksTable}
+                    (forfait_id, task_time, description, usable, created_at, updated_at) VALUES (%d,(SEC_TO_TIME(%d)),%s,%d,%s,%s)",
+            $forfait_id,
+            $added_seconds,
+            $description,
+            2,
+            $timestamp,
+            $timestamp
+        );
+        $this->wpdb->query($sql);
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
         }
     }
 
@@ -444,37 +481,37 @@ class DBActions
         $forfaitTime = $this->getForfaitTime($id);
         $forfaitSeconds = $this->TimeToSec($forfaitTime);
         $tasksSeconds = $this->TimeToSec($time);
-        if ($tasksSeconds > $forfaitSeconds) {
-            $_SESSION['errors'] = array("Le temps de la tâche dépasse le temps disponible sur le forfait");
+        if (!is_int($forfaitSeconds) || !is_int($tasksSeconds)) {
+            $_SESSION['errors'] = array("Le temps de la tâche n'est pas au bon format");
+            return;
+        }
+
+        $remainingTime = $forfaitSeconds - $tasksSeconds;
+
+        $updatedAt = date('Y-m-d H:i:s', time());
+
+        $sql = $this->wpdb->prepare(
+            "UPDATE {$this->ForfaitTable} 
+            SET total_time = (SEC_TO_TIME(%d)),
+                updated_at = %s
+            WHERE id = %d",
+            $remainingTime,
+            $updatedAt,
+            $id
+        );
+        $this->wpdb->query($sql);
+        if ($error = $this->handleError($this->wpdb->last_error)) {
+            $_SESSION['errors'] = $error;
         } else {
-            $remainingTime = $forfaitSeconds - $tasksSeconds;
-
-            $updatedAt = date('Y-m-d H:i:s', time());
-
-            $sql = $this->wpdb->prepare(
-                "UPDATE {$this->ForfaitTable} 
-                SET total_time = (SEC_TO_TIME(%d)),
-                    updated_at = %s
-                WHERE id = %d",
-                $remainingTime,
-                $updatedAt,
-                $id
-            );
-            $this->wpdb->query($sql);
-            if ($error = $this->handleError($this->wpdb->last_error)) {
-                $_SESSION['errors'] = $error;
-            } else {
-                $_SESSION['update_success'] = "Temps mis à jour !";
-            }
+            $_SESSION['update_success'] = "Temps mis à jour !";
         }
     }
 
     public function TimeToSec($time): float|int|string
     {
-        // Validation de la valeur soumise avec 3 chiffre pour les heures
-        if (preg_match('/^([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
-            return $result['seconds'] = $matches[1] * 3600 + $matches[2] * 60 + $matches[3];
-        // Validation de la valeur soumise avec 2 chiffre pour les heures
+        if (preg_match('/^(-)?([0-9]{1,3}):([0-5][0-9]):([0-5][0-9])$/', $time, $matches)) {
+            $sign = $matches[1] === '-' ? -1 : 1;
+            return $sign * ((int)$matches[2] * 3600 + (int)$matches[3] * 60 + (int)$matches[4]);
         } else {
             return $result['total_time'] = 'Le temps total n\'est pas au bon format';
         }
@@ -482,15 +519,17 @@ class DBActions
 
     public function SecToTime($seconds): string
     {
-        if (is_int($seconds)) {
-            // Calcul des heures, minutes et secondes
+        if (is_numeric($seconds)) {
+            $seconds = (int)$seconds;
+            $sign = $seconds < 0 ? '-' : '';
+            $seconds = abs($seconds);
             $heures = floor($seconds / 3600);
             $minutes = floor(($seconds % 3600) / 60);
             $secondes = floor($seconds % 60);
 
-            return $time = sprintf('%02d:%02d:%02d', $heures, $minutes, $secondes);
+            return sprintf('%s%02d:%02d:%02d', $sign, $heures, $minutes, $secondes);
         } else {
-            // La durée n'est pas un nombre entier positif
+            // La dur�e n'est pas un nombre entier positif
             return $result['error'] = "La durée n'est pas un nombre entier positif";
         }
     }
@@ -525,7 +564,7 @@ class DBActions
         // Task Time
         if (isset($datas['task_time'])) {
             if (empty($datas['task_time'])) {
-                $errors['task_time'] = 'Le temps de la tâche est vide';
+                $errors['task_time'] = 'Le temps de la t�che est vide';
             } else {
                 $result['task_time'] = strip_tags($datas['task_time']);
                 // Validation de la valeur soumise
@@ -566,3 +605,4 @@ class DBActions
     }
 
 }
+
